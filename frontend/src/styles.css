@@ -1,0 +1,33 @@
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #101820;
+  background: #ffffff;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #ffffff;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+::selection {
+  background: #e10600;
+  color: #ffffff;
+}
+
+.editorial-rule {
+  background-image: linear-gradient(90deg, #101820 0 48%, #e10600 48% 68%, #ffb000 68% 78%, #0057ff 78% 100%);
+}
+
+.story-body p {
+  margin-bottom: 1.25rem;
+  font-family: Georgia, serif;
+  font-size: 1.12rem;
+  line-height: 1.85;
+}
