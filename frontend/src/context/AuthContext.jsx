@@ -1,10 +1,11 @@
 import { createContext, useContext, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { authService } from "../services/authService";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const queryClient = useQueryClient();
   const [bootstrapped, setBootstrapped] = useState(Boolean(localStorage.getItem("bct_access_token")));
   const { data: user, refetch } = useQuery({
     queryKey: ["me"],
@@ -27,12 +28,19 @@ export function AuthProvider({ children }) {
         setBootstrapped(true);
         await refetch();
       },
-      logout() {
-        authService.logout();
-        setBootstrapped(false);
+      async logout() {
+        try {
+          await authService.logout();
+        } catch (error) {
+          console.error("Logout request failed:", error);
+        } finally {
+          setBootstrapped(false);
+          queryClient.setQueryData(["me"], null);
+          queryClient.clear();
+        }
       }
     }),
-    [user, refetch]
+    [user, refetch, queryClient]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -41,3 +49,4 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+

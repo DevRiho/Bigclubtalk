@@ -6,11 +6,14 @@ import { StoryCard } from "../components/blog/StoryCard";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/common/EmptyState";
+import { SkeletonStoryCard } from "../components/common/Skeleton";
 
 export function SearchPage() {
   const [params, setParams] = useSearchParams();
   const q = params.get("q") || params.get("club") || "";
   const results = useQuery({ queryKey: ["search", q], queryFn: () => postService.list({ q }), enabled: Boolean(q) });
+
+  const isLoading = results.isLoading && results.isFetching;
 
   function onSubmit(event) {
     event.preventDefault();
@@ -28,12 +31,26 @@ export function SearchPage() {
           Search
         </Button>
       </form>
-      <div className="mt-10 grid gap-7 md:grid-cols-3">
-        {(results.data?.data || []).map((post) => (
-          <StoryCard key={post._id} post={post} />
-        ))}
-      </div>
-      {q && !results.data?.data?.length && <div className="mt-8"><EmptyState title="No results found" /></div>}
+      
+      {isLoading ? (
+        <div className="mt-10 grid gap-7 md:grid-cols-3">
+          <SkeletonStoryCard />
+          <SkeletonStoryCard />
+          <SkeletonStoryCard />
+        </div>
+      ) : (
+        <>
+          <div className="mt-10 grid gap-7 md:grid-cols-3">
+            {(results.data?.data || []).map((post) => (
+              <StoryCard key={post._id} post={post} />
+            ))}
+          </div>
+          {q && !results.isLoading && !results.data?.data?.length && (
+            <div className="mt-8"><EmptyState title="No results found" /></div>
+          )}
+        </>
+      )}
     </main>
   );
 }
+

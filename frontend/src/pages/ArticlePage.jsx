@@ -5,6 +5,7 @@ import { postService } from "../services/postService";
 import { FALLBACK_SPORTS_IMAGE } from "../constants/brand";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/common/EmptyState";
+import { SkeletonArticle } from "../components/common/Skeleton";
 
 export function ArticlePage() {
   const { slug } = useParams();
@@ -19,8 +20,9 @@ export function ArticlePage() {
     enabled: Boolean(post?._id)
   });
 
-  if (isLoading) return <main className="mx-auto max-w-4xl px-4 py-16">Loading story...</main>;
+  if (isLoading) return <SkeletonArticle />;
   if (!post) return <main className="mx-auto max-w-4xl px-4 py-16"><EmptyState title="Story not found" /></main>;
+
 
   return (
     <main>

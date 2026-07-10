@@ -9,12 +9,24 @@ import { ClubRail } from "../components/home/ClubRail";
 import { LatestNews } from "../components/home/LatestNews";
 import { FeaturedWriters } from "../components/home/FeaturedWriters";
 import { NewsletterSection } from "../components/home/NewsletterSection";
+import { SkeletonHeroSection, SkeletonLatestNews } from "../components/common/Skeleton";
 
 export function HomePage() {
   const featured = useQuery({ queryKey: ["featured-posts"], queryFn: postService.featured });
   const trending = useQuery({ queryKey: ["trending-posts"], queryFn: postService.trending });
   const latest = useQuery({ queryKey: ["latest-posts"], queryFn: () => postService.list({ limit: 9 }) });
   const authors = useQuery({ queryKey: ["authors"], queryFn: metaService.authors });
+
+  const isLoading = featured.isLoading || trending.isLoading || latest.isLoading;
+
+  if (isLoading) {
+    return (
+      <main>
+        <SkeletonHeroSection />
+        <SkeletonLatestNews />
+      </main>
+    );
+  }
 
   const featuredPosts = featured.data?.data || [];
   const trendingPosts = trending.data?.data || [];
@@ -33,3 +45,4 @@ export function HomePage() {
     </main>
   );
 }
+

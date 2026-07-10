@@ -21,9 +21,14 @@ export const authService = {
   verifyEmail: (payload) => api.post("/auth/verify-email", payload).then((res) => res.data),
   forgotPassword: (payload) => api.post("/auth/forgot-password", payload).then((res) => res.data),
   resetPassword: (payload) => api.post("/auth/reset-password", payload).then((res) => res.data),
-  logout: () => {
-    localStorage.removeItem("bct_access_token");
-    localStorage.removeItem("bct_refresh_token");
-    localStorage.removeItem("bct_refresh_secret");
+  logout: async () => {
+    try {
+      await api.post("/auth/logout");
+    } finally {
+      localStorage.removeItem("bct_access_token");
+      localStorage.removeItem("bct_refresh_token");
+      localStorage.removeItem("bct_refresh_secret");
+    }
   }
 };
+
