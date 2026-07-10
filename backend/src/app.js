@@ -22,7 +22,31 @@ export const app = express();
 app.set("trust proxy", 1);
 
 app.use(helmet());
-app.use(cors({ origin: env.clientUrl, credentials: true }));
+
+const allowedOrigins = env.clientUrl
+  ? env.clientUrl.split(",").map((url) => {
+      let clean = url.trim();
+      if (!clean.startsWith("http")) {
+        clean = `https://${clean}`;
+      }
+      return clean.replace(/\/$/, "");
+    })
+  : ["http://localhost:5173"];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const cleanOrigin = origin.replace(/\/$/, "");
+      if (allowedOrigins.includes(cleanOrigin) || env.nodeEnv === "development" || cleanOrigin.startsWith("http://localhost")) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
+    credentials: true
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 app.use(compression());
