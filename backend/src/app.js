@@ -4,7 +4,6 @@ import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import mongoSanitize from "express-mongo-sanitize";
-import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 import { env } from "./config/env.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
@@ -16,8 +15,11 @@ import { authorRoutes } from "./routes/authorRoutes.js";
 import { newsletterRoutes } from "./routes/newsletterRoutes.js";
 import { adminRoutes } from "./routes/adminRoutes.js";
 import { searchRoutes } from "./routes/searchRoutes.js";
+import { standardLimiter } from "./middleware/rateLimiter.js";
 
 export const app = express();
+
+app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(cors({ origin: env.clientUrl, credentials: true }));
@@ -25,8 +27,9 @@ app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 app.use(compression());
 app.use(mongoSanitize());
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, limit: 250 }));
+app.use(standardLimiter);
 if (env.nodeEnv !== "test") app.use(morgan("dev"));
+
 
 app.get("/health", (req, res) => res.json({ status: "ok", service: "big-club-talk-api" }));
 app.use("/api/auth", authRoutes);

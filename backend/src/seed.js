@@ -12,23 +12,24 @@ async function seed() {
     // 1. Seed Admin User
     const adminEmail = "admin@bigclubtalk.com";
     const existingAdmin = await User.findOne({ email: adminEmail });
+    const adminPassword = process.env.SEED_ADMIN_PASSWORD || "AdminPass123!";
 
     if (existingAdmin) {
       console.log(`Admin user with email ${adminEmail} already exists.`);
       existingAdmin.role = "admin";
       existingAdmin.isEmailVerified = true;
-      existingAdmin.password = "AdminPass123!";
+      // Do not reset the password to prevent accidental reset of configured admin password in production
       await existingAdmin.save();
-      console.log(`Admin user credentials updated. Email: ${adminEmail}, Password: AdminPass123!`);
+      console.log(`Admin user role and verification verified. Password not reset.`);
     } else {
       await User.create({
         name: "BCT Admin",
         email: adminEmail,
-        password: "AdminPass123!",
+        password: adminPassword,
         role: "admin",
         isEmailVerified: true
       });
-      console.log(`Admin user created. Email: ${adminEmail}, Password: AdminPass123!`);
+      console.log(`Admin user created. Email: ${adminEmail}, Password: ${process.env.SEED_ADMIN_PASSWORD ? "[HIDDEN]" : "AdminPass123!"}`);
     }
 
     // 2. Seed Default Categories

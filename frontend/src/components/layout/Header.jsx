@@ -3,6 +3,7 @@ import { Search, UserRound } from "lucide-react";
 import { NAV_ITEMS } from "../../constants/brand";
 import { Button } from "../ui/Button";
 import { useAuth } from "../../context/AuthContext";
+import logo from "../../assets/WhatsApp Image 2026-06-20 at 9.53.17 PM.jpeg";
 
 export function Header() {
   const { isAuthenticated, user } = useAuth();
@@ -12,12 +13,13 @@ export function Header() {
       <div className="editorial-rule h-1" />
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4">
         <Link to="/" className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-sm bg-brand-ink font-display text-2xl text-white">B</span>
+          <img src={logo} alt="Big Club Talk Logo" className="h-11 w-11 object-cover rounded-sm" />
           <span>
             <span className="block font-headline text-2xl font-black uppercase leading-none text-brand-ink">Big Club</span>
             <span className="block font-headline text-xl font-black uppercase leading-none text-brand-red">Talk</span>
           </span>
         </Link>
+
 
         <nav className="hidden items-center gap-5 lg:flex">
           {NAV_ITEMS.map((item) => (

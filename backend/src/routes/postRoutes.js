@@ -4,6 +4,7 @@ import { addComment, getComments } from "../controllers/commentController.js";
 import { requireAuth, allowRoles } from "../middleware/auth.js";
 import { validate } from "../middleware/validate.js";
 import { postValidator } from "../validators/postValidators.js";
+import { commentValidator } from "../validators/commentValidators.js";
 
 export const postRoutes = Router();
 
@@ -18,4 +19,5 @@ postRoutes.post("/:id/view", recordView);
 postRoutes.post("/:id/like", requireAuth, likePost);
 postRoutes.post("/:id/bookmark", requireAuth, bookmarkPost);
 postRoutes.get("/:postId/comments", getComments);
-postRoutes.post("/:postId/comments", requireAuth, addComment);
+postRoutes.post("/:postId/comments", requireAuth, commentValidator, validate, addComment);
+

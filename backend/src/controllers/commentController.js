@@ -26,7 +26,12 @@ export const updateComment = asyncHandler(async (req, res) => {
   if (comment.author.toString() !== req.user.id && req.user.role !== "admin") throw new AppError("Cannot edit this comment", 403, "FORBIDDEN");
   
   if (req.body.content !== undefined) comment.content = req.body.content;
-  if (req.body.status !== undefined) comment.status = req.body.status;
+  if (req.body.status !== undefined) {
+    if (req.user.role !== "admin") {
+      throw new AppError("Only administrators can moderate comment status", 403, "FORBIDDEN");
+    }
+    comment.status = req.body.status;
+  }
   
   await comment.save();
   res.json({ success: true, data: comment });
