@@ -503,7 +503,7 @@ export function DashboardPage() {
                 {loadingAnalytics ? (
                   <div className="text-center py-10 font-bold text-slate-500">Loading control statistics...</div>
                 ) : (
-                  <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-5">
+                  <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
                     {[
                       ["Users", stats.users || 0, Users, "bg-blue-50 text-brand-blue"],
                       ["Posts", stats.posts || 0, FileText, "bg-red-50 text-brand-red"],
@@ -529,8 +529,8 @@ export function DashboardPage() {
                   </h3>
                   <p className="text-sm text-slate-500">The most read and viewed articles globally.</p>
 
-                  <div className="mt-6 overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                  <div className="mt-6">
+                    <table className="hidden md:table w-full text-left border-collapse">
                       <thead>
                         <tr className="border-b border-slate-200 text-xs font-bold uppercase text-slate-400">
                           <th className="pb-3">Title</th>
@@ -569,6 +569,31 @@ export function DashboardPage() {
                         )}
                       </tbody>
                     </table>
+
+                    <div className="block md:hidden space-y-4">
+                      {popularArticles.length === 0 ? (
+                        <div className="py-6 text-center text-sm text-slate-500 font-medium bg-slate-50 border border-slate-100 rounded">
+                          No statistics recorded yet.
+                        </div>
+                      ) : (
+                        popularArticles.map((art) => (
+                          <div key={art._id} className="border border-slate-200 bg-white p-4 rounded shadow-xs flex flex-col gap-2">
+                            <a 
+                              href={`/article/${art.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-headline text-base font-bold uppercase tracking-wide text-brand-ink hover:text-brand-red flex items-center gap-1.5"
+                            >
+                              {art.title} <Eye className="h-4 w-4 text-slate-400 inline" />
+                            </a>
+                            <div className="flex justify-between items-center text-xs text-slate-500 mt-1 pt-1 border-t border-slate-100">
+                              <span>Published: {art.publishedAt ? new Date(art.publishedAt).toLocaleDateString() : "Unpublished"}</span>
+                              <span className="font-bold text-brand-ink">Reads: {art.views}</span>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -606,7 +631,8 @@ export function DashboardPage() {
                   {loadingPosts ? (
                     <div className="text-center py-10 font-bold text-slate-500">Loading articles...</div>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <>
+                      <div className="hidden md:block overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
                           <tr className="border-b border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-400">
@@ -694,6 +720,84 @@ export function DashboardPage() {
                         </tbody>
                       </table>
                     </div>
+
+                    <div className="block md:hidden divide-y divide-slate-100 bg-white border border-slate-200">
+                      {adminPosts?.data
+                        ?.filter(p => p.title?.toLowerCase().includes(postSearch.toLowerCase()))
+                        .map((post) => (
+                          <div key={post._id} className="p-4 flex flex-col gap-3">
+                            <div className="flex justify-between items-start gap-2">
+                              <div>
+                                <div className="font-headline text-base font-bold uppercase text-brand-ink">
+                                  {post.title}
+                                </div>
+                                <div className="text-xs text-slate-400 mt-0.5">/{post.slug}</div>
+                              </div>
+                              <span 
+                                className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 border text-white rounded shrink-0"
+                                style={{ backgroundColor: post.category?.color || "#E10600", borderColor: post.category?.color || "#E10600" }}
+                              >
+                                {post.category?.name || "Uncategorized"}
+                              </span>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-2 text-xs text-slate-500 justify-between items-center bg-slate-50 p-2 rounded">
+                              <span>By {post.author?.name || "Unknown"}</span>
+                              <button
+                                onClick={() => togglePostFeaturedMutation.mutate({ id: post._id, featured: !post.featured })}
+                                className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded flex items-center gap-1 ${
+                                  post.featured ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"
+                                }`}
+                              >
+                                ⭐ Featured: {post.featured ? "YES" : "NO"}
+                              </button>
+                            </div>
+
+                            <div className="flex justify-between items-center pt-2 border-t border-slate-100 mt-1">
+                              <select
+                                value={post.status}
+                                onChange={(e) => togglePostStatusMutation.mutate({ id: post._id, status: e.target.value })}
+                                className={`text-xs font-bold uppercase tracking-wider p-1 rounded ${
+                                  post.status === "published" 
+                                    ? "bg-green-100 text-green-800" 
+                                    : post.status === "archived" 
+                                    ? "bg-slate-200 text-slate-800" 
+                                    : "bg-yellow-100 text-yellow-800"
+                                }`}
+                              >
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="archived">Archived</option>
+                              </select>
+
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => handleOpenEditor(post)}
+                                  className="p-1.5 text-slate-500 hover:text-brand-blue hover:bg-slate-100 border border-slate-200 rounded flex items-center gap-1 text-xs"
+                                >
+                                  <Edit2 className="h-3.5 w-3.5" /> Edit
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (confirm("Are you sure you want to permanently delete this post?")) {
+                                      deletePostMutation.mutate(post._id);
+                                    }
+                                  }}
+                                  className="p-1.5 text-slate-500 hover:text-brand-red hover:bg-slate-100 border border-slate-200 rounded flex items-center gap-1 text-xs"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      {(!adminPosts?.data || adminPosts.data.length === 0) && (
+                        <div className="p-6 text-center text-sm text-slate-500 font-medium">
+                          No articles found.
+                        </div>
+                      )}
+                    </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -721,7 +825,8 @@ export function DashboardPage() {
                   {loadingUsers ? (
                     <div className="text-center py-10 font-bold text-slate-500">Loading user list...</div>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <>
+                      <div className="hidden md:block overflow-x-auto">
                       <table className="w-full text-left border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-400">
@@ -780,6 +885,67 @@ export function DashboardPage() {
                         </tbody>
                       </table>
                     </div>
+
+                    <div className="block md:hidden divide-y divide-slate-100 bg-white border border-slate-200">
+                      {adminUsers?.data
+                        ?.filter(u => u.name?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase()))
+                        .map((usr) => (
+                          <div key={usr._id} className="p-4 flex flex-col gap-3">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <div className="font-bold text-brand-ink text-base">{usr.name}</div>
+                                <div className="text-xs text-slate-500 mt-0.5">{usr.email}</div>
+                              </div>
+                              {usr.isEmailVerified ? (
+                                <span className="text-[10px] text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 font-bold uppercase tracking-wider rounded">
+                                  Verified
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 font-bold uppercase tracking-wider rounded">
+                                  Pending
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex justify-between items-center pt-2 border-t border-slate-100 bg-slate-50 p-2.5 rounded">
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-[9px] font-black text-slate-400 uppercase">Access Role</span>
+                                <select
+                                  disabled={usr.email === "admin@bigclubtalk.com"}
+                                  value={usr.role}
+                                  onChange={(e) => updateUserRoleMutation.mutate({ id: usr._id, role: e.target.value })}
+                                  className="text-xs font-bold uppercase p-1 border border-slate-200 rounded"
+                                >
+                                  <option value="user">User / Reader</option>
+                                  <option value="author">Author / Writer</option>
+                                  <option value="admin">Administrator</option>
+                                </select>
+                              </div>
+
+                              <div className="flex flex-col gap-0.5 items-end">
+                                <span className="text-[9px] font-black text-slate-400 uppercase">Status</span>
+                                <button
+                                  disabled={usr.email === "admin@bigclubtalk.com"}
+                                  onClick={() => updateUserStatusMutation.mutate({ id: usr._id, status: usr.status === "active" ? "suspended" : "active" })}
+                                  className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded border transition ${
+                                    usr.status === "active" 
+                                      ? "bg-green-50 text-green-700 border-green-200" 
+                                      : "bg-red-50 text-red-700 border-red-200"
+                                  }`}
+                                >
+                                  {usr.status === "active" ? "Active" : "Suspended"}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      {(!adminUsers?.data || adminUsers.data.length === 0) && (
+                        <div className="p-6 text-center text-sm text-slate-500 font-medium">
+                          No users found.
+                        </div>
+                      )}
+                    </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -799,7 +965,8 @@ export function DashboardPage() {
                     {loadingCategories ? (
                       <div className="text-center py-10 font-bold text-slate-500">Loading categories...</div>
                     ) : (
-                      <div className="overflow-x-auto">
+                      <>
+                        <div className="hidden md:block overflow-x-auto">
                         <table className="w-full text-left border-collapse text-sm">
                           <thead>
                             <tr className="border-b border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-400">
@@ -837,6 +1004,40 @@ export function DashboardPage() {
                           </tbody>
                         </table>
                       </div>
+
+                      <div className="block md:hidden divide-y divide-slate-100 bg-white border border-slate-200">
+                        {categories?.map((cat) => (
+                          <div key={cat._id} className="p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <span 
+                                className="w-6 h-6 rounded border border-slate-200 shadow-sm shrink-0"
+                                style={{ backgroundColor: cat.color }}
+                              />
+                              <div>
+                                <div className="font-headline text-base font-bold uppercase text-brand-ink">{cat.name}</div>
+                                <div className="text-xs text-slate-400 mt-0.5">/{cat.slug}</div>
+                              </div>
+                            </div>
+                            
+                            <button
+                              onClick={() => {
+                                      if (confirm(`Are you sure you want to delete Category "${cat.name}"?`)) {
+                                        deleteCategoryMutation.mutate(cat._id);
+                                      }
+                                    }}
+                              className="text-slate-400 hover:text-brand-red transition p-2 hover:bg-slate-50 border border-slate-200 rounded"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                        {(!categories || categories.length === 0) && (
+                          <div className="p-6 text-center text-sm text-slate-500 font-medium">
+                            No categories found.
+                          </div>
+                        )}
+                      </div>
+                      </>
                     )}
                   </div>
                 </div>
@@ -941,7 +1142,8 @@ export function DashboardPage() {
                   {loadingComments ? (
                     <div className="text-center py-10 font-bold text-slate-500">Loading comments...</div>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <>
+                      <div className="hidden md:block overflow-x-auto">
                       <table className="w-full text-left border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-400">
@@ -1014,6 +1216,68 @@ export function DashboardPage() {
                         </tbody>
                       </table>
                     </div>
+
+                    <div className="block md:hidden divide-y divide-slate-100 bg-white border border-slate-200">
+                      {adminComments?.data
+                        ?.filter(c => c.content?.toLowerCase().includes(commentSearch.toLowerCase()) || c.author?.name?.toLowerCase().includes(commentSearch.toLowerCase()))
+                        .map((comm) => (
+                          <div key={comm._id} className="p-4 flex flex-col gap-2">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <div className="font-bold text-brand-ink">{comm.author?.name}</div>
+                                <div className="text-xs text-slate-400">{comm.author?.email}</div>
+                              </div>
+                              <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border rounded ${
+                                comm.status === "visible" 
+                                  ? "bg-green-50 text-green-700 border-green-200" 
+                                  : "bg-red-50 text-red-700 border-red-200"
+                              }`}>
+                                {comm.status}
+                              </span>
+                            </div>
+
+                            <div className="text-xs text-slate-500 mt-1">
+                              Article: <span className="font-bold text-brand-ink uppercase font-headline">{comm.post?.title || "Deleted Article"}</span>
+                            </div>
+
+                            <div className="bg-slate-50 p-2 rounded text-xs text-slate-700 italic border border-slate-100 mt-1">
+                              "{comm.content}"
+                            </div>
+
+                            <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-slate-100">
+                              <button
+                                onClick={() => toggleCommentStatusMutation.mutate({
+                                  id: comm._id,
+                                  status: comm.status === "visible" ? "hidden" : "visible"
+                                })}
+                                className={`px-2.5 py-1 text-xs font-bold rounded border ${
+                                  comm.status === "visible" 
+                                    ? "text-red-700 bg-red-50 border-red-200" 
+                                    : "text-green-700 bg-green-50 border-green-200"
+                                }`}
+                              >
+                                {comm.status === "visible" ? "Hide" : "Approve"}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (confirm("Are you sure you want to delete this comment completely?")) {
+                                    deleteCommentMutation.mutate(comm._id);
+                                  }
+                                }}
+                                className="px-2.5 py-1 text-xs font-bold rounded border border-slate-200 text-slate-600 hover:text-brand-red"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      {(!adminComments?.data || adminComments.data.length === 0) && (
+                        <div className="p-6 text-center text-sm text-slate-500 font-medium">
+                          No comments found.
+                        </div>
+                      )}
+                    </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -1031,7 +1295,8 @@ export function DashboardPage() {
                   {loadingSubscribers ? (
                     <div className="text-center py-10 font-bold text-slate-500">Loading subscribers...</div>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <>
+                      <div className="hidden md:block overflow-x-auto">
                       <table className="w-full text-left border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-400">
@@ -1058,6 +1323,23 @@ export function DashboardPage() {
                         </tbody>
                       </table>
                     </div>
+
+                    <div className="block md:hidden divide-y divide-slate-100 bg-white border border-slate-200">
+                      {subscribers?.map((sub) => (
+                        <div key={sub._id} className="p-4 flex justify-between items-center">
+                          <span className="font-semibold text-brand-ink text-sm">{sub.email}</span>
+                          <span className="text-slate-400 text-xs">
+                            {new Date(sub.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))}
+                      {subscribers?.length === 0 && (
+                        <div className="p-6 text-center text-slate-400 font-medium">
+                          No newsletter subscribers registered yet.
+                        </div>
+                      )}
+                    </div>
+                    </>
                   )}
                 </div>
               </div>

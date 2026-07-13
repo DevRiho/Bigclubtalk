@@ -25,7 +25,7 @@ export const env = {
     from: process.env.MAIL_FROM || "Big Club Talk <newsroom@bigclubtalk.com>"
   },
   resendApiKey: process.env.RESEND_API_KEY,
-
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
 };
 
 export function assertEnv() {

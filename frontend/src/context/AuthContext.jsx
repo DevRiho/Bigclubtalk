@@ -28,6 +28,11 @@ export function AuthProvider({ children }) {
         setBootstrapped(true);
         await refetch();
       },
+      async socialLogin(payload) {
+        await authService.socialLogin(payload);
+        setBootstrapped(true);
+        await refetch();
+      },
       async logout() {
         try {
           await authService.logout();

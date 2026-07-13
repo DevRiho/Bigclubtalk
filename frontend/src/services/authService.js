@@ -17,6 +17,11 @@ export const authService = {
     persistTokens(data);
     return data.user;
   },
+  socialLogin: async (payload) => {
+    const { data } = await api.post("/auth/social", payload);
+    persistTokens(data);
+    return data.user;
+  },
   me: () => api.get("/auth/me").then((res) => res.data.user),
   verifyEmail: (payload) => api.post("/auth/verify-email", payload).then((res) => res.data),
   forgotPassword: (payload) => api.post("/auth/forgot-password", payload).then((res) => res.data),

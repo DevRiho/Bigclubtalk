@@ -9,7 +9,13 @@ export const requireAuth = asyncHandler(async (req, res, next) => {
 
   if (!token) throw new AppError("Authentication required", 401, "AUTH_REQUIRED");
 
-  const payload = verifyAccessToken(token);
+  let payload;
+  try {
+    payload = verifyAccessToken(token);
+  } catch (error) {
+    throw new AppError("Invalid or expired access token", 401, "AUTH_INVALID");
+  }
+  
   const user = await User.findById(payload.sub);
 
   if (!user || user.status !== "active") throw new AppError("Invalid authentication", 401, "AUTH_INVALID");

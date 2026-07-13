@@ -6,6 +6,7 @@ import { SearchPage } from "../pages/SearchPage";
 import { CategoryPage } from "../pages/CategoryPage";
 import { DashboardPage } from "../pages/DashboardPage";
 import { ForgotPasswordPage, LoginPage, RegisterPage, ResetPasswordPage, VerifyEmailPage } from "../pages/AuthPages";
+import { SocialPopupPage } from "../pages/SocialPopupPage";
 
 export function AppRoutes() {
   return (
@@ -23,6 +24,7 @@ export function AppRoutes() {
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="reset-password" element={<ResetPasswordPage />} />
       </Route>
+      <Route path="social-popup" element={<SocialPopupPage />} />
     </Routes>
   );
 }

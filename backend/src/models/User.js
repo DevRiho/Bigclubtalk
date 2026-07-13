@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 80 },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    password: { type: String, required: true, minlength: 8, select: false },
+    password: { type: String, required: false, minlength: 8, select: false },
     role: { type: String, enum: Object.values(ROLES), default: ROLES.USER, index: true },
     avatar: { url: String, publicId: String },
     bio: { type: String, maxlength: 500 },
@@ -36,6 +36,8 @@ const userSchema = new mongoose.Schema(
     passwordResetHash: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
     refreshTokens: [refreshTokenSchema],
+    socialProvider: { type: String, enum: ["local", "google", "facebook", "apple"], default: "local" },
+    socialId: { type: String },
     status: { type: String, enum: ["active", "suspended"], default: "active", index: true }
   },
   { timestamps: true }

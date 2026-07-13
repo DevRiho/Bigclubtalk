@@ -37,6 +37,7 @@ export async function registerUser({ name, email, password }) {
   if (exists) throw new AppError("An account with this email already exists", 409, "EMAIL_EXISTS");
 
   const otp = generateOtp();
+  console.log(`[AUTH] Generated OTP for ${email}: ${otp}`);
   const user = await User.create({
     name,
     email,
@@ -96,6 +97,7 @@ export async function sendPasswordReset(email) {
   await user.save();
 
   const url = `${env.clientUrl}/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+  console.log(`[AUTH] Password reset link for ${email}: ${url}`);
   await sendEmail({ to: email, subject: "Reset your Big Club Talk password", html: resetPasswordTemplate(url) });
 }
 
