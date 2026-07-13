@@ -92,30 +92,6 @@ function SocialAuthSection() {
           </svg>
           Google
         </button>
-
-        {/* Facebook */}
-        <button
-          type="button"
-          onClick={() => handleProviderClick("facebook")}
-          className="flex items-center justify-center px-4 py-2.5 border border-slate-200 rounded bg-[#1877F2] text-sm font-bold text-white hover:bg-[#166FE5] transition-colors shadow-sm"
-        >
-          <svg className="h-5 w-5 mr-3 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-          Facebook
-        </button>
-
-        {/* Apple */}
-        <button
-          type="button"
-          onClick={() => handleProviderClick("apple")}
-          className="flex items-center justify-center px-4 py-2.5 border border-slate-200 rounded bg-black text-sm font-bold text-white hover:bg-neutral-900 transition-colors shadow-sm"
-        >
-          <svg className="h-5 w-5 mr-3 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.54 9.103 1.51 12.09 1.01 1.454 2.19 3.078 3.76 3.023 1.52-.06 2.09-.98 3.93-.98 1.83 0 2.36.98 3.93.946 1.6-.027 2.63-1.477 3.61-2.906 1.13-1.644 1.59-3.233 1.62-3.315-.03-.014-3.117-1.19-3.149-4.75-.027-2.983 2.45-4.417 2.56-4.485-1.402-2.05-3.562-2.28-4.322-2.336-1.99-.164-3.93 1.228-4.93 1.228zm2.63-4.57c.885-1.066 1.477-2.553 1.312-4.04-1.28.053-2.83.854-3.75 1.928-.806.924-1.514 2.433-1.326 3.903 1.427.11 2.88-.724 3.764-1.79z"/>
-          </svg>
-          Apple
-        </button>
       </div>
     </div>
   );

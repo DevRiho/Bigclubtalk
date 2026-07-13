@@ -15,7 +15,7 @@ function tokenPayload(tokens) {
 export const socialLogin = asyncHandler(async (req, res) => {
   const { provider, token, email, name, avatar } = req.body;
 
-  if (!provider || !["google", "facebook", "apple"].includes(provider)) {
+  if (!provider || provider !== "google") {
     throw new AppError("Invalid social provider", 400, "INVALID_PROVIDER");
   }
 
@@ -25,76 +25,31 @@ export const socialLogin = asyncHandler(async (req, res) => {
   let socialId = "";
 
   // 1. Google Verification
-  if (provider === "google") {
-    if (!token) {
-      throw new AppError("Google credential token is required", 400, "TOKEN_REQUIRED");
-    }
-    try {
-      const { OAuth2Client } = await import("google-auth-library");
-      const client = new OAuth2Client(env.googleClientId);
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: env.googleClientId
-      });
-      const payload = ticket.getPayload();
-      if (!payload) {
-        throw new AppError("Google token verification failed: empty payload", 401, "GOOGLE_AUTH_FAILED");
-      }
-      finalEmail = payload.email;
-      finalName = payload.name;
-      finalAvatar = payload.picture;
-      socialId = payload.sub;
-    } catch (error) {
-      console.error("[SOCIAL AUTH] Google token verification error:", error);
-      throw new AppError("Google token verification failed: " + error.message, 401, "GOOGLE_AUTH_FAILED");
-    }
-  } 
-  // 2. Facebook Verification
-  else if (provider === "facebook") {
-    if (!token) {
-      throw new AppError("Facebook access token is required", 400, "TOKEN_REQUIRED");
-    }
-    try {
-      const fbResponse = await fetch(
-        `https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,picture.type(large)`
-      );
-      const fbData = await fbResponse.json();
-      if (fbData.error) {
-        throw new Error(fbData.error.message);
-      }
-      finalEmail = fbData.email;
-      finalName = fbData.name;
-      finalAvatar = fbData.picture?.data?.url;
-      socialId = fbData.id;
-    } catch (error) {
-      console.error("[SOCIAL AUTH] Facebook token verification error:", error);
-      throw new AppError("Facebook token verification failed: " + error.message, 401, "FACEBOOK_AUTH_FAILED");
-    }
+  if (!token) {
+    throw new AppError("Google credential token is required", 400, "TOKEN_REQUIRED");
   }
-  // 3. Apple Verification
-  else if (provider === "apple") {
-    if (!token) {
-      throw new AppError("Apple credential token is required", 400, "TOKEN_REQUIRED");
+  try {
+    const { OAuth2Client } = await import("google-auth-library");
+    const client = new OAuth2Client(env.googleClientId);
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: env.googleClientId
+    });
+    const payload = ticket.getPayload();
+    if (!payload) {
+      throw new AppError("Google token verification failed: empty payload", 401, "GOOGLE_AUTH_FAILED");
     }
-    try {
-      const parts = token.split(".");
-      if (parts.length !== 3) {
-        throw new Error("Invalid Apple ID token structure");
-      }
-      const payloadBuf = Buffer.from(parts[1], "base64");
-      const payload = JSON.parse(payloadBuf.toString("utf-8"));
-      
-      finalEmail = payload.email;
-      finalName = payload.name ? `${payload.name.firstName} ${payload.name.lastName}` : "";
-      socialId = payload.sub;
-    } catch (error) {
-      console.error("[SOCIAL AUTH] Apple token verification error:", error);
-      throw new AppError("Apple token verification failed: " + error.message, 401, "APPLE_AUTH_FAILED");
-    }
+    finalEmail = payload.email;
+    finalName = payload.name;
+    finalAvatar = payload.picture;
+    socialId = payload.sub;
+  } catch (error) {
+    console.error("[SOCIAL AUTH] Google token verification error:", error);
+    throw new AppError("Google token verification failed: " + error.message, 401, "GOOGLE_AUTH_FAILED");
   }
 
   if (!finalEmail) {
-    throw new AppError("Failed to retrieve email from social provider", 400, "EMAIL_REQUIRED");
+    throw new AppError("Failed to retrieve email from Google", 400, "EMAIL_REQUIRED");
   }
 
   // 3. Find or create user
