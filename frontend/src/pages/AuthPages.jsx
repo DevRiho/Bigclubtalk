@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "../components/ui/Button";
@@ -100,14 +100,36 @@ function SocialAuthSection() {
 export function LoginPage() {
   const { register, handleSubmit } = useForm();
   const { login } = useAuth();
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (values) => {
+    setError("");
+    setLoading(true);
+    try {
+      await login(values);
+      const redirect = searchParams.get("redirect") || "/dashboard";
+      window.location.href = redirect;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || "Invalid email or password");
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthFrame title="Sign In" footer={<><span>New here? </span><Link className="font-bold text-brand-red" to="/register">Create an account</Link></>}>
-      <form className="grid gap-4" onSubmit={handleSubmit(async (values) => { await login(values); navigate("/dashboard"); })}>
+      <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+        {error && (
+          <div className="border border-brand-red bg-red-50 p-3 text-sm text-brand-red font-bold uppercase rounded font-sans">
+            {error}
+          </div>
+        )}
         <Input type="email" placeholder="Email" {...register("email", { required: true })} />
         <Input type="password" placeholder="Password" {...register("password", { required: true })} />
-        <Button type="submit">Login</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Signing In..." : "Login"}
+        </Button>
         <Link className="text-sm font-bold text-brand-red" to="/forgot-password">Forgot password?</Link>
       </form>
       <SocialAuthSection />
@@ -118,15 +140,35 @@ export function LoginPage() {
 export function RegisterPage() {
   const { register, handleSubmit } = useForm();
   const { register: createAccount } = useAuth();
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (values) => {
+    setError("");
+    setLoading(true);
+    try {
+      await createAccount(values);
+      window.location.href = "/verify-email";
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || "Failed to create account");
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthFrame title="Create Account" footer={<><span>Already have access? </span><Link className="font-bold text-brand-red" to="/login">Sign in</Link></>}>
-      <form className="grid gap-4" onSubmit={handleSubmit(async (values) => { await createAccount(values); navigate("/verify-email"); })}>
+      <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+        {error && (
+          <div className="border border-brand-red bg-red-50 p-3 text-sm text-brand-red font-bold uppercase rounded font-sans">
+            {error}
+          </div>
+        )}
         <Input placeholder="Name" {...register("name", { required: true })} />
         <Input type="email" placeholder="Email" {...register("email", { required: true })} />
         <Input type="password" placeholder="Password" {...register("password", { required: true })} />
-        <Button type="submit">Register</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Creating Account..." : "Register"}
+        </Button>
       </form>
       <SocialAuthSection />
     </AuthFrame>
