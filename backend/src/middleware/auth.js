@@ -32,3 +32,21 @@ export function allowRoles(...roles) {
     next();
   };
 }
+
+export const optionalAuth = asyncHandler(async (req, res, next) => {
+  const header = req.headers.authorization;
+  const token = header?.startsWith("Bearer ") ? header.slice(7) : req.cookies.accessToken;
+
+  if (token) {
+    try {
+      const payload = verifyAccessToken(token);
+      const user = await User.findById(payload.sub);
+      if (user && user.status === "active") {
+        req.user = user;
+      }
+    } catch (error) {
+      // Ignore token verification errors for optional authentication
+    }
+  }
+  next();
+});

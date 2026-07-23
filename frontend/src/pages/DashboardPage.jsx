@@ -14,7 +14,9 @@ export function DashboardPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState("overview");
+  
+  const isAdmin = user?.role === "admin";
+  const [activeTab, setActiveTab] = useState(isAdmin ? "overview" : "posts");
 
   // Auth check - redirect if not logged in
   useEffect(() => {
@@ -23,9 +25,14 @@ export function DashboardPage() {
     }
   }, [user, navigate]);
 
-  // Tab data fetching
-  const isAdmin = user?.role === "admin";
+  // If user role changes or loads, ensure non-admins aren't stuck on overview tab
+  useEffect(() => {
+    if (user && user.role !== "admin" && activeTab === "overview") {
+      setActiveTab("posts");
+    }
+  }, [user, activeTab]);
 
+  // Tab data fetching
   const { data: analytics, isLoading: loadingAnalytics } = useQuery({
     queryKey: ["analytics"],
     queryFn: metaService.analytics,
@@ -39,9 +46,9 @@ export function DashboardPage() {
   });
 
   const { data: adminPosts, isLoading: loadingPosts, refetch: refetchPosts } = useQuery({
-    queryKey: ["adminPosts"],
-    queryFn: metaService.adminPosts,
-    enabled: isAdmin
+    queryKey: ["adminPosts", isAdmin],
+    queryFn: () => isAdmin ? metaService.adminPosts() : postService.list({ author: user?._id, status: "all" }).then(res => res.data),
+    enabled: !!user
   });
 
   const { data: adminComments, isLoading: loadingComments, refetch: refetchComments } = useQuery({
@@ -301,8 +308,8 @@ export function DashboardPage() {
 
   if (!user) return null;
 
-  const stats = analytics?.data || { users: 0, posts: 0, comments: 0, views: 0, likes: 0 };
-  const popularArticles = analytics?.data?.popularArticles || [];
+  const stats = analytics || { users: 0, posts: 0, comments: 0, views: 0, likes: 0 };
+  const popularArticles = analytics?.popularArticles || [];
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
@@ -582,13 +589,13 @@ export function DashboardPage() {
           <aside className="lg:col-span-1">
             <nav className="flex flex-row overflow-x-auto border-b border-slate-200 lg:flex-col lg:border-b-0 lg:border-r lg:border-slate-200 lg:pr-4 space-y-0 lg:space-y-1">
               {[
-                { id: "overview", label: "Overview", icon: BarChart3 },
-                { id: "posts", label: "Posts Feed", icon: FileText },
-                { id: "users", label: "User Roles", icon: Users },
-                { id: "categories", label: "Categories", icon: Layers },
-                { id: "comments", label: "Moderation", icon: MessageSquare },
-                { id: "subscribers", label: "Subscribers", icon: Mail },
-              ].map((tab) => {
+                { id: "overview", label: "Overview", icon: BarChart3, adminOnly: true },
+                { id: "posts", label: "Posts Feed", icon: FileText, adminOnly: false },
+                { id: "users", label: "User Roles", icon: Users, adminOnly: true },
+                { id: "categories", label: "Categories", icon: Layers, adminOnly: true },
+                { id: "comments", label: "Moderation", icon: MessageSquare, adminOnly: true },
+                { id: "subscribers", label: "Subscribers", icon: Mail, adminOnly: true },
+              ].filter(tab => !tab.adminOnly || isAdmin).map((tab) => {
                 const Icon = tab.icon;
                 const isSelected = activeTab === tab.id;
                 return (

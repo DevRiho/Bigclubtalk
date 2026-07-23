@@ -16,8 +16,11 @@ export async function listPosts(query) {
   const { page, limit, skip } = getPagination(query);
   const filter = {};
 
-  if (query.status) filter.status = query.status;
-  else filter.status = POST_STATUS.PUBLISHED;
+  if (query.status) {
+    if (query.status !== "all") filter.status = query.status;
+  } else {
+    filter.status = POST_STATUS.PUBLISHED;
+  }
   if (query.category) filter.category = query.category;
   if (query.author) filter.author = query.author;
   if (query.tag) filter.tags = String(query.tag).toLowerCase();

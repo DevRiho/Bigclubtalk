@@ -53,6 +53,18 @@ export const uploadPostImageController = asyncHandler(async (req, res) => {
 });
 
 export const getPosts = asyncHandler(async (req, res) => {
+  const isRequestingSensitive = req.query.status && req.query.status !== "published";
+  
+  if (isRequestingSensitive) {
+    const isAuthorized = req.user && (
+      req.user.role === "admin" ||
+      (req.user.role === "author" && String(req.query.author) === String(req.user._id))
+    );
+    if (!isAuthorized) {
+      req.query.status = "published";
+    }
+  }
+
   const result = await listPosts(req.query);
   res.json({ success: true, ...result });
 });
