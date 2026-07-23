@@ -131,7 +131,7 @@ export function DashboardPage() {
       formData.append("image", file);
       const res = await postService.uploadImage(formData);
       setUploadedImageUrl(res.url);
-      handleInsertAtCursor(`\n![image](${res.url})\n`);
+      handleInsertAtCursor(`\n<img src="${res.url}" alt="image" />\n`);
     } catch (err) {
       console.error(err);
       setEditorError("Failed to upload image to body. Please try again.");

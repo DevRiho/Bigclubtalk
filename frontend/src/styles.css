@@ -25,9 +25,117 @@ body {
   background-image: linear-gradient(90deg, #101820 0 48%, #e10600 48% 68%, #ffb000 68% 78%, #0057ff 78% 100%);
 }
 
+/* Story Body Premium Typography */
+.story-body {
+  font-size: 1.15rem;
+  line-height: 1.85;
+  color: #1e293b; /* slate-800 */
+}
+
 .story-body p {
+  margin-bottom: 1.75rem;
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 1.15rem;
+  line-height: 1.9;
+  color: #1e293b;
+}
+
+.story-body h1,
+.story-body h2,
+.story-body h3 {
+  font-family: "Oswald", "Bebas Neue", sans-serif;
+  color: #101820; /* brand-ink */
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.story-body h1 {
+  font-size: 2.25rem;
+  margin-top: 3rem;
   margin-bottom: 1.25rem;
+}
+
+.story-body h2 {
+  font-size: 1.75rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 0.5rem;
+}
+
+.story-body h3 {
+  font-size: 1.4rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.story-body strong,
+.story-body b {
+  font-weight: 800;
+  color: #0f172a; /* slate-900 */
+}
+
+.story-body em,
+.story-body i {
+  font-style: italic;
+}
+
+.story-body a {
+  color: #e10600; /* brand-red */
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.story-body a:hover {
+  color: #101820;
+}
+
+.story-body blockquote {
+  margin: 2.5rem 0;
+  padding: 1rem 1.5rem;
+  background-color: #f8fafc; /* slate-50 */
+  border-left: 4px solid #e10600; /* brand-red */
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  line-height: 1.7;
+  color: #475569; /* slate-600 */
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.story-body ul,
+.story-body ol {
+  margin-top: 0.5rem;
+  margin-bottom: 1.75rem;
+  padding-left: 2rem;
+}
+
+.story-body ul {
+  list-style-type: disc;
+}
+
+.story-body ol {
+  list-style-type: decimal;
+}
+
+.story-body li {
+  margin-bottom: 0.5rem;
   font-family: Georgia, serif;
   font-size: 1.12rem;
-  line-height: 1.85;
+  color: #334155; /* slate-700 */
+  line-height: 1.7;
+}
+
+.story-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 3rem auto;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
 }

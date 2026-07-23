@@ -6,6 +6,7 @@ import { FALLBACK_SPORTS_IMAGE } from "../constants/brand";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/common/EmptyState";
 import { SkeletonArticle } from "../components/common/Skeleton";
+import { parseMarkdownToHtml } from "../utils/markdown";
 
 export function ArticlePage() {
   const { slug } = useParams();
@@ -47,7 +48,7 @@ export function ArticlePage() {
             <Share2 size={16} /> Share
           </Button>
         </div>
-        <div className="story-body" dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div className="story-body" dangerouslySetInnerHTML={{ __html: parseMarkdownToHtml(post.content) }} />
       </article>
 
       <section className="mx-auto max-w-4xl px-4 py-10">
