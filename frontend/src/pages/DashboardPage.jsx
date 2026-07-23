@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { 
   BarChart3, FileText, MessageSquare, Users, Plus, Trash2, 
-  Check, X, Sparkles, Layers, Mail, Eye, Shield, Edit2, LogOut 
+  Check, X, Sparkles, Layers, Mail, Eye, Shield, Edit2, LogOut,
+  Upload, Copy
 } from "lucide-react";
 import { metaService } from "../services/metaService";
 import { postService } from "../services/postService";
@@ -79,6 +80,65 @@ export function DashboardPage() {
   const [postCoverUrl, setPostCoverUrl] = useState("");
   const [postCoverAlt, setPostCoverAlt] = useState("");
   const [editorError, setEditorError] = useState("");
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingBody, setUploadingBody] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+
+  const handleCoverImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingCover(true);
+    setEditorError("");
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await postService.uploadImage(formData);
+      setPostCoverUrl(res.url);
+    } catch (err) {
+      console.error(err);
+      setEditorError("Failed to upload cover image. Please try again.");
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  const handleInsertAtCursor = (textToInsert) => {
+    const textarea = document.getElementById("postContentTextarea");
+    if (!textarea) {
+      setPostContent(prev => prev + "\n" + textToInsert);
+      return;
+    }
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const before = text.substring(0, start);
+    const after = text.substring(end, text.length);
+    const newContent = before + textToInsert + after;
+    setPostContent(newContent);
+    setTimeout(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + textToInsert.length, start + textToInsert.length);
+    }, 0);
+  };
+
+  const handleBodyImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingBody(true);
+    setEditorError("");
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await postService.uploadImage(formData);
+      setUploadedImageUrl(res.url);
+      handleInsertAtCursor(`\n![image](${res.url})\n`);
+    } catch (err) {
+      console.error(err);
+      setEditorError("Failed to upload image to body. Please try again.");
+    } finally {
+      setUploadingBody(false);
+    }
+  };
 
   // Category Form states
   const [catName, setCatName] = useState("");
@@ -341,6 +401,7 @@ export function DashboardPage() {
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">Body Content (HTML/Markdown, Min 50 chars) *</label>
                   <textarea
+                    id="postContentTextarea"
                     required
                     rows="12"
                     value={postContent}
@@ -348,6 +409,26 @@ export function DashboardPage() {
                     placeholder="Start typing the article body content..."
                     className="mt-2 w-full border border-slate-200 p-3 font-serif text-base focus:border-brand-blue focus:ring-0 focus:outline-none"
                   />
+                  <div className="mt-2 flex items-center justify-between gap-4 bg-slate-50 p-3 border border-slate-200 rounded">
+                    <div>
+                      <span className="block text-[10px] font-black uppercase tracking-wider text-slate-400">Insert Image in Body</span>
+                      <p className="text-xs text-slate-500 mt-0.5">Upload an image to insert it at your cursor position.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 text-xs font-bold uppercase tracking-wider text-brand-ink bg-white hover:bg-slate-100 cursor-pointer transition select-none rounded">
+                        <Upload className="h-3.5 w-3.5 text-slate-500" />
+                        <span>Upload File</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleBodyImageUpload}
+                          className="hidden"
+                          disabled={uploadingBody}
+                        />
+                      </label>
+                      {uploadingBody && <span className="text-xs text-slate-500 animate-pulse">Uploading...</span>}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -401,6 +482,20 @@ export function DashboardPage() {
                     placeholder="https://images.unsplash.com/..."
                     className="mt-2 w-full border border-slate-200 p-3 text-sm focus:border-brand-blue focus:ring-0 focus:outline-none"
                   />
+                  <div className="mt-2 flex items-center gap-2">
+                    <label className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 text-xs font-bold uppercase tracking-wider text-brand-ink bg-white hover:bg-slate-100 cursor-pointer transition select-none rounded">
+                      <Upload className="h-3.5 w-3.5 text-slate-500" />
+                      <span>Upload Cover File</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCoverImageUpload}
+                        className="hidden"
+                        disabled={uploadingCover}
+                      />
+                    </label>
+                    {uploadingCover && <span className="text-xs text-slate-500 animate-pulse">Uploading...</span>}
+                  </div>
                 </div>
 
                 <div>
@@ -645,7 +740,7 @@ export function DashboardPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 text-sm">
-                          {adminPosts?.data
+                          {adminPosts
                             ?.filter(p => p.title?.toLowerCase().includes(postSearch.toLowerCase()))
                             .map((post) => (
                               <tr key={post._id} className="hover:bg-slate-50 transition">
@@ -722,7 +817,7 @@ export function DashboardPage() {
                     </div>
 
                     <div className="block md:hidden divide-y divide-slate-100 bg-white border border-slate-200">
-                      {adminPosts?.data
+                      {adminPosts
                         ?.filter(p => p.title?.toLowerCase().includes(postSearch.toLowerCase()))
                         .map((post) => (
                           <div key={post._id} className="p-4 flex flex-col gap-3">
@@ -791,7 +886,7 @@ export function DashboardPage() {
                             </div>
                           </div>
                         ))}
-                      {(!adminPosts?.data || adminPosts.data.length === 0) && (
+                      {(!adminPosts || adminPosts.length === 0) && (
                         <div className="p-6 text-center text-sm text-slate-500 font-medium">
                           No articles found.
                         </div>
@@ -838,7 +933,7 @@ export function DashboardPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                          {adminUsers?.data
+                          {adminUsers
                             ?.filter(u => u.name?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase()))
                             .map((usr) => (
                               <tr key={usr._id} className="hover:bg-slate-50 transition">
@@ -887,7 +982,7 @@ export function DashboardPage() {
                     </div>
 
                     <div className="block md:hidden divide-y divide-slate-100 bg-white border border-slate-200">
-                      {adminUsers?.data
+                      {adminUsers
                         ?.filter(u => u.name?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase()))
                         .map((usr) => (
                           <div key={usr._id} className="p-4 flex flex-col gap-3">
@@ -939,7 +1034,7 @@ export function DashboardPage() {
                             </div>
                           </div>
                         ))}
-                      {(!adminUsers?.data || adminUsers.data.length === 0) && (
+                      {(!adminUsers || adminUsers.length === 0) && (
                         <div className="p-6 text-center text-sm text-slate-500 font-medium">
                           No users found.
                         </div>
@@ -1155,7 +1250,7 @@ export function DashboardPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                          {adminComments?.data
+                          {adminComments
                             ?.filter(c => c.content?.toLowerCase().includes(commentSearch.toLowerCase()) || c.author?.name?.toLowerCase().includes(commentSearch.toLowerCase()))
                             .map((comm) => (
                               <tr key={comm._id} className="hover:bg-slate-50 transition">
@@ -1218,7 +1313,7 @@ export function DashboardPage() {
                     </div>
 
                     <div className="block md:hidden divide-y divide-slate-100 bg-white border border-slate-200">
-                      {adminComments?.data
+                      {adminComments
                         ?.filter(c => c.content?.toLowerCase().includes(commentSearch.toLowerCase()) || c.author?.name?.toLowerCase().includes(commentSearch.toLowerCase()))
                         .map((comm) => (
                           <div key={comm._id} className="p-4 flex flex-col gap-2">
@@ -1271,7 +1366,7 @@ export function DashboardPage() {
                             </div>
                           </div>
                         ))}
-                      {(!adminComments?.data || adminComments.data.length === 0) && (
+                      {(!adminComments || adminComments.length === 0) && (
                         <div className="p-6 text-center text-sm text-slate-500 font-medium">
                           No comments found.
                         </div>

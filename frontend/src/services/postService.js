@@ -13,6 +13,9 @@ export const postService = {
   addComment: (postId, payload) => api.post(`/posts/${postId}/comments`, payload).then((res) => res.data.data),
   delete: (id) => api.delete(`/posts/${id}`).then((res) => res.data),
   deleteComment: (id) => api.delete(`/comments/${id}`).then((res) => res.data),
-  updateComment: (id, payload) => api.patch(`/comments/${id}`, payload).then((res) => res.data.data)
+  updateComment: (id, payload) => api.patch(`/comments/${id}`, payload).then((res) => res.data.data),
+  uploadImage: (formData) => api.post("/posts/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" }
+  }).then((res) => res.data)
 };
 

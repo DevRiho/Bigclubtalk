@@ -2,6 +2,55 @@ import { Post } from "../models/Post.js";
 import { createPost, deletePost, listPosts, toggleBookmark, togglePostLike, updatePost } from "../services/postService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError } from "../utils/AppError.js";
+import { cloudinary } from "../config/cloudinary.js";
+import { env } from "../config/env.js";
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+
+const uploadToCloudinary = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: "bigclubtalk" },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+    uploadStream.end(fileBuffer);
+  });
+};
+
+const uploadToLocal = async (file, req) => {
+  const uploadsDir = path.join(process.cwd(), "uploads");
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  const filename = `${crypto.randomBytes(16).toString("hex")}${path.extname(file.originalname)}`;
+  const filepath = path.join(uploadsDir, filename);
+  await fs.promises.writeFile(filepath, file.buffer);
+  return `${req.protocol}://${req.get("host")}/uploads/${filename}`;
+};
+
+export const uploadPostImageController = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    throw new AppError("No file uploaded", 400, "NO_FILE");
+  }
+
+  const isCloudinaryConfigured = env.cloudinary.cloudName && env.cloudinary.apiKey && env.cloudinary.apiSecret;
+
+  if (isCloudinaryConfigured) {
+    try {
+      const result = await uploadToCloudinary(req.file.buffer);
+      return res.json({ success: true, url: result.secure_url });
+    } catch (err) {
+      console.warn("Cloudinary upload failed, falling back to local storage:", err);
+    }
+  }
+
+  const url = await uploadToLocal(req.file, req);
+  res.json({ success: true, url });
+});
 
 export const getPosts = asyncHandler(async (req, res) => {
   const result = await listPosts(req.query);

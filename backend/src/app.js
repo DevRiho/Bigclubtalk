@@ -54,6 +54,7 @@ app.use(mongoSanitize());
 app.use(standardLimiter);
 if (env.nodeEnv !== "test") app.use(morgan("dev"));
 
+app.use("/uploads", express.static("uploads"));
 
 app.get("/health", (req, res) => res.json({ status: "ok", service: "big-club-talk-api" }));
 app.use("/api/auth", authRoutes);
