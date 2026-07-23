@@ -7,7 +7,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
   const [bootstrapped, setBootstrapped] = useState(Boolean(localStorage.getItem("bct_access_token")));
-  const { data: user, refetch } = useQuery({
+  const { data: user, refetch, isLoading } = useQuery({
     queryKey: ["me"],
     queryFn: authService.me,
     enabled: bootstrapped,
@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       isAuthenticated: Boolean(user),
+      loading: bootstrapped && isLoading,
       async login(payload) {
         await authService.login(payload);
         setBootstrapped(true);
@@ -45,7 +46,7 @@ export function AuthProvider({ children }) {
         }
       }
     }),
-    [user, refetch, queryClient]
+    [user, isLoading, bootstrapped, refetch, queryClient]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

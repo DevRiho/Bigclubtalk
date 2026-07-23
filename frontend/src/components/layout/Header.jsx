@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/WhatsApp Image 2026-06-20 at 9.53.17 PM.jpeg";
 
 export function Header() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
@@ -35,7 +35,9 @@ export function Header() {
               <Search size={18} />
             </Link>
           </Button>
-          {isAuthenticated ? (
+          {loading ? (
+            <div className="h-10 w-24 bg-slate-100 animate-pulse rounded" />
+          ) : isAuthenticated ? (
             <Button asChild variant="secondary">
               <Link to={user?.role === "admin" ? "/admin" : "/dashboard"}>
                 <UserRound size={16} />

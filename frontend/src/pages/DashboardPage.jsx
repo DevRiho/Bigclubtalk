@@ -11,7 +11,7 @@ import { postService } from "../services/postService";
 import { useAuth } from "../context/AuthContext";
 
 export function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
@@ -20,10 +20,10 @@ export function DashboardPage() {
 
   // Auth check - redirect if not logged in
   useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       navigate("/login");
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
 
   // If user role changes or loads, ensure non-admins aren't stuck on overview tab
   useEffect(() => {
@@ -305,6 +305,17 @@ export function DashboardPage() {
       queryClient.invalidateQueries(["analytics"]);
     }
   });
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <div className="text-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-red border-t-transparent mx-auto"></div>
+          <p className="mt-4 text-xs font-black uppercase text-slate-500 tracking-widest font-sans">Verifying session...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) return null;
 
