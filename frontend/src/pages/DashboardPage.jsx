@@ -474,18 +474,40 @@ export function DashboardPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">Cover Image URL</label>
-                  <input
-                    type="text"
-                    value={postCoverUrl}
-                    onChange={(e) => setPostCoverUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/..."
-                    className="mt-2 w-full border border-slate-200 p-3 text-sm focus:border-brand-blue focus:ring-0 focus:outline-none"
-                  />
-                  <div className="mt-2 flex items-center gap-2">
-                    <label className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 text-xs font-bold uppercase tracking-wider text-brand-ink bg-white hover:bg-slate-100 cursor-pointer transition select-none rounded">
-                      <Upload className="h-3.5 w-3.5 text-slate-500" />
-                      <span>Upload Cover File</span>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Cover Image *</label>
+                  {postCoverUrl ? (
+                    <div className="relative border border-slate-200 p-2 bg-slate-50 rounded">
+                      <img 
+                        src={postCoverUrl} 
+                        alt={postCoverAlt || "Cover Preview"} 
+                        className="w-full h-48 object-cover rounded"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPostCoverUrl("");
+                          setPostCoverAlt("");
+                        }}
+                        className="absolute top-4 right-4 bg-brand-red text-white p-2 rounded hover:bg-red-700 shadow-md transition flex items-center justify-center border border-white"
+                        title="Remove Image"
+                      >
+                        <X className="h-4 w-4 font-bold" />
+                      </button>
+                      <div className="mt-2 text-xs text-slate-500 font-medium truncate">
+                        File: {postCoverUrl}
+                      </div>
+                    </div>
+                  ) : (
+                    <label className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 cursor-pointer rounded transition ${uploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Upload className="h-10 w-10 text-slate-400 mb-2" />
+                        <p className="text-sm text-slate-700 font-semibold uppercase tracking-wider">
+                          {uploadingCover ? "Uploading Image..." : "Upload Cover Image"}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Click to select a file from your computer
+                        </p>
+                      </div>
                       <input
                         type="file"
                         accept="image/*"
@@ -494,8 +516,7 @@ export function DashboardPage() {
                         disabled={uploadingCover}
                       />
                     </label>
-                    {uploadingCover && <span className="text-xs text-slate-500 animate-pulse">Uploading...</span>}
-                  </div>
+                  )}
                 </div>
 
                 <div>
