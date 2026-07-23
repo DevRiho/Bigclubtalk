@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
@@ -21,7 +22,11 @@ export const app = express();
 
 app.set("trust proxy", 1);
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+  })
+);
 
 const allowedOrigins = env.clientUrl
   ? env.clientUrl.split(",").map((url) => {
@@ -54,7 +59,7 @@ app.use(mongoSanitize());
 app.use(standardLimiter);
 if (env.nodeEnv !== "test") app.use(morgan("dev"));
 
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.get("/health", (req, res) => res.json({ status: "ok", service: "big-club-talk-api" }));
 app.use("/api/auth", authRoutes);
