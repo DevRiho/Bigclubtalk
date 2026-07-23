@@ -14,8 +14,35 @@ export function ArticlePage() {
   const { slug } = useParams();
   const queryClient = useQueryClient();
   const { data: post, isLoading } = useQuery({ queryKey: ["post", slug], queryFn: () => postService.bySlug(slug) });
-  const like = useMutation({ mutationFn: () => postService.like(post._id) });
-  const bookmark = useMutation({ mutationFn: () => postService.bookmark(post._id) });
+  const like = useMutation({
+    mutationFn: () => postService.like(post._id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["post", slug]);
+    }
+  });
+
+  const bookmark = useMutation({
+    mutationFn: () => postService.bookmark(post._id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["post", slug]);
+    }
+  });
+
+  const handleLike = () => {
+    if (!user) {
+      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+      return;
+    }
+    like.mutate();
+  };
+
+  const handleBookmark = () => {
+    if (!user) {
+      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+      return;
+    }
+    bookmark.mutate();
+  };
 
   const comments = useQuery({
     queryKey: ["comments", post?._id],
@@ -61,15 +88,37 @@ export function ArticlePage() {
           {post.publishedAt && <span>{new Date(post.publishedAt).toLocaleDateString()}</span>}
         </div>
         <img src={post.coverImage?.url || FALLBACK_SPORTS_IMAGE} alt={post.coverImage?.alt || post.title} className="mt-8 h-[520px] w-full object-cover" />
-        <div className="my-8 flex flex-wrap gap-3">
-          <Button variant="outline" onClick={() => like.mutate()}>
-            <Heart size={16} /> Like
+        <div className="my-8 flex flex-wrap gap-3 font-sans">
+          <Button 
+            onClick={handleLike}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded font-headline text-sm font-bold uppercase tracking-wider transition ${
+              post.isLiked 
+                ? "bg-red-50 text-brand-red border border-brand-red hover:bg-red-100" 
+                : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+            }`}
+          >
+            <Heart size={16} className={post.isLiked ? "fill-brand-red text-brand-red" : "text-slate-500"} /> 
+            {post.isLiked ? "Liked" : "Like"} ({post.likesCount || 0})
           </Button>
-          <Button variant="outline" onClick={() => bookmark.mutate()}>
-            <Bookmark size={16} /> Bookmark
+
+          <Button 
+            onClick={handleBookmark}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded font-headline text-sm font-bold uppercase tracking-wider transition ${
+              post.isBookmarked 
+                ? "bg-blue-50 text-brand-blue border border-brand-blue hover:bg-blue-100" 
+                : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+            }`}
+          >
+            <Bookmark size={16} className={post.isBookmarked ? "fill-brand-blue text-brand-blue" : "text-slate-500"} /> 
+            {post.isBookmarked ? "Bookmarked" : "Bookmark"}
           </Button>
-          <Button variant="outline" onClick={() => navigator.share?.({ title: post.title, url: window.location.href })}>
-            <Share2 size={16} /> Share
+
+          <Button 
+            variant="outline" 
+            onClick={() => navigator.share?.({ title: post.title, url: window.location.href })}
+            className="flex items-center gap-2 px-5 py-2.5 rounded font-headline text-sm font-bold uppercase tracking-wider border border-slate-200 text-slate-700 hover:bg-slate-50 bg-white"
+          >
+            <Share2 size={16} className="text-slate-500" /> Share
           </Button>
         </div>
         <div className="story-body" dangerouslySetInnerHTML={{ __html: parseMarkdownToHtml(post.content) }} />

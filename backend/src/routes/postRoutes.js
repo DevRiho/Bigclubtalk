@@ -17,7 +17,7 @@ const upload = multer({
 postRoutes.get("/", optionalAuth, getPosts);
 postRoutes.get("/featured", getFeaturedPosts);
 postRoutes.get("/trending", getTrendingPosts);
-postRoutes.get("/:slug", getPostBySlug);
+postRoutes.get("/:slug", optionalAuth, getPostBySlug);
 postRoutes.post("/upload", requireAuth, allowRoles("author", "admin"), upload.single("image"), uploadPostImageController);
 postRoutes.post("/", requireAuth, allowRoles("author", "admin"), postValidator, validate, createPostController);
 postRoutes.patch("/:id", requireAuth, allowRoles("author", "admin"), updatePostController);

@@ -1,4 +1,6 @@
 import { Post } from "../models/Post.js";
+import { Like } from "../models/Like.js";
+import { Bookmark } from "../models/Bookmark.js";
 import { createPost, deletePost, listPosts, toggleBookmark, togglePostLike, updatePost } from "../services/postService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError } from "../utils/AppError.js";
@@ -88,7 +90,19 @@ export const getPostBySlug = asyncHandler(async (req, res) => {
     .populate("category", "name slug color")
     .populate("author", "name title avatar bio socialLinks");
   if (!post) throw new AppError("Post not found", 404, "POST_NOT_FOUND");
-  res.json({ success: true, data: post });
+
+  const [likesCount, isLiked, isBookmarked] = await Promise.all([
+    Like.countDocuments({ post: post._id }),
+    req.user ? Like.exists({ user: req.user._id, post: post._id }) : false,
+    req.user ? Bookmark.exists({ user: req.user._id, post: post._id }) : false
+  ]);
+
+  const postObj = post.toObject();
+  postObj.likesCount = likesCount;
+  postObj.isLiked = !!isLiked;
+  postObj.isBookmarked = !!isBookmarked;
+
+  res.json({ success: true, data: postObj });
 });
 
 export const createPostController = asyncHandler(async (req, res) => {
