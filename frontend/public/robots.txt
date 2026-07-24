@@ -1,0 +1,12 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Exclude sensitive dashboard/authentication states from search crawler indexations
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+
+Sitemap: https://bigclubtalk.com/sitemap.xml

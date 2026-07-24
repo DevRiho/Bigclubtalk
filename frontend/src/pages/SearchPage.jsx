@@ -7,6 +7,7 @@ import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/common/EmptyState";
 import { SkeletonStoryCard } from "../components/common/Skeleton";
+import { SEO } from "../components/common/SEO";
 
 export function SearchPage() {
   const [params, setParams] = useSearchParams();
@@ -23,7 +24,11 @@ export function SearchPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-12">
-      <h1 className="font-headline text-6xl font-black uppercase text-brand-ink">Search Big Club Talk</h1>
+      <SEO 
+        title={q ? `Search: ${q}` : "Search Stories"} 
+        description="Search Big Club Talk football news database for latest stories, transfers, match reviews, and fan commentary." 
+      />
+      <h1 className="font-headline text-6xl font-black uppercase text-brand-ink dark:text-slate-100">Search Big Club Talk</h1>
       <form onSubmit={onSubmit} className="mt-6 flex max-w-2xl gap-3">
         <Input name="q" defaultValue={q} placeholder="Search title, tag, category, author..." />
         <Button type="submit">

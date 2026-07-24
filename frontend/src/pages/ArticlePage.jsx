@@ -9,6 +9,7 @@ import { EmptyState } from "../components/common/EmptyState";
 import { SkeletonArticle } from "../components/common/Skeleton";
 import { parseMarkdownToHtml } from "../utils/markdown";
 import { useAuth } from "../context/AuthContext";
+import { SEO } from "../components/common/SEO";
 
 export function ArticlePage() {
   const { slug } = useParams();
@@ -78,68 +79,92 @@ export function ArticlePage() {
 
   return (
     <main>
+      <SEO 
+        title={post.title}
+        description={post.excerpt}
+        image={post.coverImage?.url || FALLBACK_SPORTS_IMAGE}
+        type="article"
+        articleData={{
+          publishedAt: post.publishedAt || post.createdAt,
+          createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
+          authorName: post.author?.name
+        }}
+      />
+      
       <article className="mx-auto max-w-5xl px-4 py-10">
-        <p className="text-xs font-black uppercase text-brand-red">{post.category?.name}</p>
-        <h1 className="mt-3 font-headline text-5xl font-black uppercase leading-none text-brand-ink md:text-7xl">{post.title}</h1>
-        <p className="mt-5 max-w-3xl text-xl leading-8 text-slate-600">{post.excerpt}</p>
-        <div className="mt-6 flex flex-wrap items-center gap-3 text-xs font-bold uppercase text-slate-500">
-          <span>{post.author?.name}</span>
+        <p className="text-xs font-black uppercase text-brand-red tracking-wider">{post.category?.name}</p>
+        <h1 className="mt-3 font-headline text-5xl font-black uppercase leading-none text-brand-ink dark:text-slate-100 md:text-7xl">{post.title}</h1>
+        <p className="mt-5 max-w-3xl text-xl leading-relaxed text-slate-600 dark:text-slate-400">{post.excerpt}</p>
+        <div className="mt-6 flex flex-wrap items-center gap-3 text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
+          <span className="text-slate-700 dark:text-slate-200">{post.author?.name}</span>
+          <span>&bull;</span>
           <span>{post.readingTime} min read</span>
-          {post.publishedAt && <span>{new Date(post.publishedAt).toLocaleDateString()}</span>}
+          {post.publishedAt && (
+            <>
+              <span>&bull;</span>
+              <span>{new Date(post.publishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            </>
+          )}
         </div>
-        <img src={post.coverImage?.url || FALLBACK_SPORTS_IMAGE} alt={post.coverImage?.alt || post.title} className="mt-8 h-[520px] w-full object-cover" />
+        
+        <div className="mt-8 overflow-hidden rounded-sm aspect-[21/9]">
+          <img src={post.coverImage?.url || FALLBACK_SPORTS_IMAGE} alt={post.coverImage?.alt || post.title} className="h-full w-full object-cover" />
+        </div>
+
         <div className="my-8 flex flex-wrap gap-3 font-sans">
           <Button 
             onClick={handleLike}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded font-headline text-sm font-bold uppercase tracking-wider transition ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-sm font-headline text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
               post.isLiked 
-                ? "bg-red-50 text-brand-red border border-brand-red hover:bg-red-100" 
-                : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+                ? "bg-red-50 dark:bg-red-950/20 text-brand-red border border-brand-red hover:bg-red-100 dark:hover:bg-red-900/30" 
+                : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80"
             }`}
           >
-            <Heart size={16} className={post.isLiked ? "fill-brand-red text-brand-red" : "text-slate-500"} /> 
+            <Heart size={15} className={post.isLiked ? "fill-brand-red text-brand-red" : "text-slate-500"} /> 
             {post.isLiked ? "Liked" : "Like"} ({post.likesCount || 0})
           </Button>
 
           <Button 
             onClick={handleBookmark}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded font-headline text-sm font-bold uppercase tracking-wider transition ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-sm font-headline text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
               post.isBookmarked 
-                ? "bg-blue-50 text-brand-blue border border-brand-blue hover:bg-blue-100" 
-                : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
+                ? "bg-blue-50 dark:bg-blue-950/20 text-brand-blue border border-brand-blue hover:bg-blue-100 dark:hover:bg-blue-900/30" 
+                : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80"
             }`}
           >
-            <Bookmark size={16} className={post.isBookmarked ? "fill-brand-blue text-brand-blue" : "text-slate-500"} /> 
+            <Bookmark size={15} className={post.isBookmarked ? "fill-brand-blue text-brand-blue" : "text-slate-500"} /> 
             {post.isBookmarked ? "Bookmarked" : "Bookmark"}
           </Button>
 
           <Button 
             variant="outline" 
-            onClick={() => navigator.share?.({ title: post.title, url: window.location.href })}
-            className="flex items-center gap-2 px-5 py-2.5 rounded font-headline text-sm font-bold uppercase tracking-wider border border-slate-200 text-slate-700 hover:bg-slate-50 bg-white"
+            onClick={() => navigator.share?.({ title: post.title, url: window.location.href }) || navigator.clipboard.writeText(window.location.href).then(() => alert("Link copied to clipboard!"))}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-sm font-headline text-xs font-bold uppercase tracking-wider border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/80 bg-white dark:bg-slate-900"
           >
-            <Share2 size={16} className="text-slate-500" /> Share
+            <Share2 size={15} className="text-slate-500" /> Share
           </Button>
         </div>
+
         <div className="story-body" dangerouslySetInnerHTML={{ __html: parseMarkdownToHtml(post.content) }} />
       </article>
 
-      <section className="mx-auto max-w-4xl px-4 py-10">
-        <h2 className="font-headline text-4xl font-black uppercase text-brand-ink">
-          <MessageCircle className="mr-2 inline" /> Comments
+      <section className="mx-auto max-w-4xl px-4 py-12 border-t border-slate-100 dark:border-slate-900">
+        <h2 className="font-headline text-3xl font-black uppercase text-brand-ink dark:text-slate-100 flex items-center">
+          <MessageCircle className="mr-3 text-brand-red" size={24} /> Comments
         </h2>
         
         {/* Comment submission form or Login CTA */}
-        <div className="mt-6 border border-slate-200 bg-slate-50 p-6 rounded mb-8">
+        <div className="mt-6 border border-slate-200 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/30 p-6 rounded-sm mb-8 transition-colors duration-200">
           {user ? (
             <form onSubmit={handleCommentSubmit} className="space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-brand-ink text-white font-bold text-xs uppercase flex items-center justify-center">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-brand-ink dark:bg-slate-800 text-white font-bold text-xs uppercase flex items-center justify-center">
                   {user.name ? user.name.split(" ").map(n => n[0]).join("") : "U"}
                 </div>
                 <div>
-                  <span className="text-sm font-bold block">{user.name}</span>
-                  <span className="text-xs text-slate-500 uppercase font-semibold">Join the discussion</span>
+                  <span className="text-sm font-black block dark:text-slate-100">{user.name}</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Join the discussion</span>
                 </div>
               </div>
               <textarea
@@ -148,7 +173,7 @@ export function ArticlePage() {
                 onChange={(e) => setCommentText(e.target.value)}
                 placeholder="Share your thoughts on this story..."
                 maxLength="1200"
-                className="w-full border border-slate-200 p-3 text-sm focus:border-brand-blue focus:ring-0 focus:outline-none bg-white rounded font-sans"
+                className="w-full border border-slate-200 dark:border-slate-800 p-3 text-sm focus:border-brand-blue focus:ring-0 focus:outline-none bg-white dark:bg-slate-950 dark:text-slate-100 rounded-sm font-sans"
                 required
               />
               {commentError && <p className="text-xs font-bold text-brand-red uppercase">{commentError}</p>}
@@ -157,19 +182,19 @@ export function ArticlePage() {
                 <Button 
                   type="submit" 
                   disabled={addComment.isPending || !commentText.trim()}
-                  className="bg-brand-ink border-brand-ink text-white font-headline text-sm font-bold uppercase tracking-wider px-6 py-2.5 hover:bg-white hover:text-brand-ink border-2"
+                  className="bg-brand-ink dark:bg-slate-800 border-brand-ink dark:border-slate-850 text-white font-headline text-xs font-black uppercase tracking-wider px-6 py-2.5 hover:bg-brand-red dark:hover:bg-brand-red"
                 >
                   {addComment.isPending ? "Posting..." : "Post Comment"}
                 </Button>
               </div>
             </form>
           ) : (
-            <div className="text-center py-4">
-              <p className="text-slate-600 font-medium">Want to share your thoughts on this story?</p>
-              <p className="text-xs text-slate-400 mt-1 uppercase font-bold">Sign in or register an account to post a comment.</p>
+            <div className="text-center py-6">
+              <p className="text-slate-700 dark:text-slate-300 font-bold">Want to share your thoughts on this story?</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5 uppercase font-bold tracking-wider">Sign in or register an account to post a comment.</p>
               <a 
                 href={`/login?redirect=${encodeURIComponent(window.location.pathname)}`}
-                className="mt-4 inline-block bg-brand-ink border-2 border-brand-ink text-white font-headline text-sm font-bold uppercase tracking-wider px-6 py-2.5 hover:bg-white hover:text-brand-ink transition"
+                className="mt-5 inline-block bg-brand-ink dark:bg-slate-850 text-white font-headline text-xs font-black uppercase tracking-widest px-8 py-3 hover:bg-brand-red dark:hover:bg-brand-red transition rounded-sm"
               >
                 Sign In
               </a>
@@ -178,13 +203,16 @@ export function ArticlePage() {
         </div>
 
         <div className="mt-6 grid gap-4">
-          {(comments.data || []).map((comment) => (
-            <div key={comment._id} className="border border-slate-200 p-4">
-              <p className="text-sm font-bold">{comment.author?.name}</p>
-              <p className="mt-2 text-slate-700">{comment.content}</p>
-            </div>
-          ))}
-          {!comments.data?.length && <EmptyState title="No comments yet" message="Be the first voice in this thread after signing in." />}
+          {comments.data?.length ? (
+            comments.data.map((comment) => (
+              <div key={comment._id} className="border border-slate-100 dark:border-slate-850 bg-white/40 dark:bg-slate-900/20 p-4 rounded-sm">
+                <p className="text-xs font-black uppercase tracking-wider text-brand-ink dark:text-slate-200">{comment.author?.name}</p>
+                <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-350">{comment.content}</p>
+              </div>
+            ))
+          ) : (
+            <EmptyState title="No comments yet" message="Be the first voice in this thread after signing in." />
+          )}
         </div>
       </section>
     </main>

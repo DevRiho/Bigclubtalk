@@ -2,6 +2,29 @@
  * A lightweight utility to parse Markdown-style text and newlines into formatted HTML.
  * Handles paragraphs, headings, blockquotes, lists, bold/italic text, links, and image tags.
  */
+
+// Simple client-side sanitizer to prevent XSS injection
+function sanitizeHtml(html) {
+  if (!html) return "";
+  
+  let clean = html;
+  
+  // 1. Strip script tags and their content
+  clean = clean.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+  
+  // 2. Remove javascript: links in href
+  clean = clean.replace(/href\s*=\s*(['"])\s*javascript:[^'"]*['"]/gi, 'href="#blocked"');
+  
+  // 3. Remove inline event handlers (onerror, onload, onclick, etc.)
+  clean = clean.replace(/\s\bon[a-z]+\s*=\s*(['"])[^'"]*\1/gi, "");
+  clean = clean.replace(/\s\bon[a-z]+\s*=\s*[^\s>]+/gi, "");
+  
+  // 4. Strip dangerous object/embed/iframe/meta tags (optional but good practice)
+  clean = clean.replace(/<(iframe|embed|object|meta|link)\b[^>]*>/gi, "");
+  
+  return clean;
+}
+
 export function parseMarkdownToHtml(content) {
   if (!content) return "";
 
@@ -14,9 +37,9 @@ export function parseMarkdownToHtml(content) {
     let processed = content;
     // Replace markdown images: ![alt](url) -> <img src="url" alt="alt" class="story-image" />
     processed = processed.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="story-image" />');
-    // Replace markdown links: [text](url) -> <a href="url" class="story-link" target="_blank" rel="noopener noreferrer">$1</a>
+    // Replace markdown links: [text](url) -> <a href="$2" class="story-link" target="_blank" rel="noopener noreferrer">$1</a>
     processed = processed.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="story-link" target="_blank" rel="noopener noreferrer">$1</a>');
-    return processed;
+    return sanitizeHtml(processed);
   }
 
   // Normalize line endings
@@ -79,7 +102,8 @@ export function parseMarkdownToHtml(content) {
     return `<p class="story-p">${inlineParsed}</p>`;
   });
 
-  return htmlBlocks.filter(Boolean).join("\n");
+  const finalHtml = htmlBlocks.filter(Boolean).join("\n");
+  return sanitizeHtml(finalHtml);
 }
 
 /**

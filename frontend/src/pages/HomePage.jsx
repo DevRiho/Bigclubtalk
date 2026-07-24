@@ -10,6 +10,7 @@ import { LatestNews } from "../components/home/LatestNews";
 import { FeaturedWriters } from "../components/home/FeaturedWriters";
 import { NewsletterSection } from "../components/home/NewsletterSection";
 import { SkeletonHeroSection, SkeletonLatestNews } from "../components/common/Skeleton";
+import { SEO } from "../components/common/SEO";
 
 export function HomePage() {
   const featured = useQuery({ queryKey: ["featured-posts"], queryFn: postService.featured });
@@ -34,6 +35,10 @@ export function HomePage() {
 
   return (
     <main>
+      <SEO 
+        title="Football News, Transfers, Analysis & Fan Voices" 
+        description="Uncompromising football journalism. Inside stories, tactical breakdowns, transfer insights, and fan-driven narratives." 
+      />
       <HeroSection featured={featuredPosts} trending={trendingPosts} />
       <BreakingTicker posts={trendingPosts} />
       <TrendingStories posts={trendingPosts} />

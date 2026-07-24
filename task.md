@@ -1,0 +1,36 @@
+- `[x]` Step 1: Tailwind & Global CSS Config
+  - `[x]` Modify `tailwind.config.js` to enable class-based dark mode
+  - `[x]` Update `styles.css` with dark mode bases and premium typography
+- `[x]` Step 2: Dark Mode State & Custom Hook
+  - `[x]` Create `ThemeContext.jsx` for theme state persistence
+  - `[x]` Create `useTheme.js` custom hook
+  - `[x]` Wrap app with `ThemeProvider` in `main.jsx`
+- `[x]` Step 3: Navigation Header & Drawer
+  - `[x]` Update `Header.jsx` with active NavLink indicators
+  - `[x]` Implement sticky header scroll effects (height transitions, shadow)
+  - `[x]` Add animated dark mode toggle button
+  - `[x]` Integrate search input inside header
+  - `[x]` Build Framer Motion mobile menu drawer (responsive overlay)
+- `[x]` Step 4: Redesigned Story Card
+  - `[x]` Redesign `StoryCard.jsx` visual hierarchy
+  - `[x]` Add image hover zoom and card elevation transitions
+  - `[x]` Integrate bookmarks and native share with Toast notification hook
+  - `[x]` Add date, reading time, and author avatar indicators
+- `[x]` Step 5: Homepage Layout Refinements
+  - `[x]` Add slide-in page/section animations to `HeroSection.jsx` and `LatestNews.jsx`
+  - `[x]` Replace raw anchor links with React Router `Link` components in `TransferCentre.jsx`, `ClubRail.jsx`, and `Footer.jsx`
+  - `[x]` Refine styling and dark mode behavior in all homepage sections
+- `[x]` Step 6: Security & Markdown Parsing
+  - `[x]` Update `markdown.js` to sanitize inputs and links (prevent XSS)
+- `[x]` Step 7: Reusable SEO Component
+  - `[x]` Create `<SEO>` component for dynamic Open Graph, Twitter cards, Structured Data, and Canonical URLs
+  - `[x]` Integrate `<SEO>` component in `ArticlePage.jsx`, `SearchPage.jsx`, `CategoryPage.jsx`, and `HomePage.jsx`
+- `[x]` Step 8: Route Performance & Code Splitting
+  - `[x]` Modify `AppRoutes.jsx` to load views lazily using `React.lazy` and `Suspense`
+- `[x]` Step 9: Refactoring DashboardPage
+  - `[x]` Modularize `DashboardPage.jsx` into smaller tab components under `/components/dashboard/`
+  - `[x]` Extract overview, posts, users, comments, categories, subscribers, and post editor tabs
+- `[x]` Step 10: SEO Assets & Verification
+  - `[x]` Create public `robots.txt`
+  - `[x]` Create public `sitemap.xml`
+  - `[x]` Run production build `npm run build` to verify clean compilation

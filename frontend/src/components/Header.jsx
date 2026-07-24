@@ -1,4 +1,3 @@
-import React from "react";
 import logo from "../assets/WhatsApp Image 2026-06-20 at 9.53.17 PM.jpeg";
 import "./Header.css";
 

@@ -83,6 +83,19 @@ const stories = [
       <p>For a period, the traditional target man seemed to be facing extinction. The rise of fluid front threes and false nines suggested that teams preferred mobility and midfield-overloading over static physical presence.</p>
       <p>However, the explosive success of Erling Haaland and the complete playmaking striker model of Harry Kane have proved that the number 9 is alive and well—it has just adapted. Modern strikers must now press aggressively, participate in build-up play, and create space for inside forwards while maintaining elite box movement.</p>
     `
+  },
+  {
+    title: "Super Falcons: The Glory of Having 10 Stars on Their Jersey",
+    excerpt: "With a record 10 WAFCON titles, the Nigeria Women's National Football Team stands as the ultimate powerhouse of African football, proudly wearing 10 stars.",
+    categoryName: "News",
+    tags: ["super falcons", "nigeria", "wafcon", "womens football", "africa"],
+    featured: true,
+    coverUrl: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80",
+    content: `
+      <p>The Nigeria Women's National Football Team, popularly known as the Super Falcons, has achieved an unprecedented milestone in continental football. With their latest historic triumph, they have secured their tenth Women's Africa Cup of Nations (WAFCON) title, paving the way for 10 glorious stars to be embroidered on their official jersey.</p>
+      <p>This achievement cements the Super Falcons' status as the most successful national team in African history. Since the inception of the tournament, Nigeria has dominated the women's game, showcasing elite talent, physical dominance, and tactical superiority across generations of players like Perpetua Nkwocha, Asisat Oshoala, and Rasheedat Ajibade.</p>
+      <p>Wearing 10 stars on their jersey is not just a badge of honor; it is a statement of absolute dominance and a symbol of pride for millions of Nigerian football fans. As the team looks to conquer the global stage, these 10 stars serve as a reminder of their legendary status as the undisputed queens of African football.</p>
+    `
   }
 ];
 
