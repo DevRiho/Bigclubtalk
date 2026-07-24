@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Search, UserRound, Sun, Moon, Menu, X } from "lucide-react";
+import { Search, UserRound, Sun, Moon, Menu, X, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_ITEMS } from "../../constants/brand";
 import { Button } from "../ui/Button";
@@ -238,104 +238,76 @@ export function Header() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed bottom-0 right-0 top-0 z-50 flex h-full w-[310px] flex-col border-l border-slate-200 bg-white/98 p-6 shadow-2xl backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/98 lg:hidden"
+              className="fixed bottom-0 right-0 top-0 z-50 flex h-full w-[310px] flex-col border-l border-slate-800 bg-[#0c142c] p-6 shadow-2xl backdrop-blur-md lg:hidden"
             >
               {/* BRAND HEADER */}
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-900">
+              <div className="flex items-center justify-between border-b border-slate-800/60 pb-4">
                 <Link to="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
                   <img src={logo} alt="BCT Logo" className="h-8 w-8 object-cover rounded-sm" />
-                  <span className="font-headline text-lg font-black uppercase tracking-wider text-brand-ink dark:text-slate-100">
+                  <span className="font-headline text-lg font-black uppercase tracking-wider text-white">
                     Big Club <span className="text-brand-red">Talk</span>
                   </span>
                 </Link>
-                <Button
-                  variant="ghost"
+                <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="h-9 w-9 px-0 rounded-full hover:rotate-90 hover:bg-slate-100 dark:hover:bg-slate-850 transition-all duration-300"
+                  className="rounded-full p-2 text-slate-400 hover:bg-slate-800/80 hover:text-white transition"
                   aria-label="Close mobile menu"
                 >
                   <X size={18} />
-                </Button>
+                </button>
               </div>
 
               {/* SEARCH BOX */}
               <form onSubmit={handleSearchSubmit} className="mt-5 relative">
-                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
                 <input
                   type="text"
                   placeholder="Search sports stories..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-10 w-full rounded-sm border border-slate-200 bg-slate-50/50 pl-10 pr-4 text-xs font-medium outline-none focus:border-brand-red dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-brand-red transition-all duration-200"
+                  className="h-10 w-full rounded-sm border border-slate-850 bg-[#070b1a] pl-10 pr-4 text-xs font-medium text-white outline-none focus:border-brand-red transition-all duration-200"
                 />
               </form>
 
               {/* NAVIGATION LIST */}
-              <nav className="mt-6 flex flex-col gap-2.5">
+              <nav className="mt-6 flex flex-col divide-y divide-slate-800/60">
                 {NAV_ITEMS.map((item) => (
-                  <motion.div key={item.href} variants={navItemVariants}>
+                  <motion.div key={item.href} variants={navItemVariants} className="py-3">
                     <NavLink
                       to={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={({ isActive }) => `flex items-center justify-between text-sm font-extrabold uppercase py-2 px-3 border-l-4 rounded-r-sm transition-all duration-200 ${
+                      className={({ isActive }) => `flex items-center justify-between text-xs font-black uppercase tracking-wider transition-colors px-1 ${
                         isActive 
-                          ? "border-brand-red text-brand-red bg-red-50/30 dark:bg-red-955/10" 
-                          : "border-transparent text-slate-700 hover:text-brand-red hover:bg-slate-50 dark:text-slate-350 dark:hover:text-brand-red dark:hover:bg-slate-900/40"
+                          ? "text-brand-red" 
+                          : "text-slate-100 hover:text-brand-red"
                       }`}
                     >
                       <span>{item.label}</span>
-                      <span className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">➜</span>
+                      <ChevronRight size={13} className="text-slate-600" />
                     </NavLink>
                   </motion.div>
                 ))}
               </nav>
 
-              {/* THEME TOGGLER CARD */}
-              <motion.div 
-                variants={navItemVariants}
-                className="mt-6 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50 p-3 border border-slate-105 dark:border-slate-850 rounded-sm"
-              >
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                  Interface Style
-                </span>
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 dark:border-slate-750 bg-white dark:bg-slate-900 rounded-sm text-[10px] font-black uppercase tracking-wider text-brand-ink dark:text-slate-200 hover:bg-slate-55 dark:hover:bg-slate-800 shadow-sm transition"
-                >
-                  {theme === "dark" ? (
-                    <>
-                      <Sun size={13} className="text-brand-gold fill-current" />
-                      <span>Light Mode</span>
-                    </>
-                  ) : (
-                    <>
-                      <Moon size={13} className="text-slate-500" />
-                      <span>Dark Mode</span>
-                    </>
-                  )}
-                </button>
-              </motion.div>
-
               {/* USER PANEL */}
-              <div className="mt-auto pt-6 border-t border-slate-100 dark:border-slate-900">
+              <div className="mt-auto pt-6 border-t border-slate-800/60">
                 {loading ? (
-                  <div className="h-10 w-full bg-slate-100 dark:bg-slate-900/50 animate-pulse rounded-sm" />
+                  <div className="h-10 w-full bg-slate-900/50 animate-pulse rounded-sm" />
                 ) : isAuthenticated ? (
                   <motion.div variants={navItemVariants} className="space-y-4">
-                    <div className="flex items-center gap-3.5 bg-slate-50 dark:bg-slate-900/30 p-3 border border-slate-105 dark:border-slate-850 rounded-sm">
-                      <div className="h-9 w-9 rounded-full bg-brand-red text-white font-bold flex items-center justify-center border border-white dark:border-slate-800 shadow-sm text-sm uppercase">
+                    <div className="flex items-center gap-3.5 bg-[#070b1a] p-3 border border-slate-800 rounded-sm">
+                      <div className="h-9 w-9 rounded-full bg-brand-red text-white font-bold flex items-center justify-center border border-white/20 shadow-sm text-sm uppercase">
                         {user?.name ? user.name[0] : <UserRound size={16} />}
                       </div>
                       <div className="overflow-hidden">
-                        <p className="text-xs font-extrabold truncate text-brand-ink dark:text-slate-200 leading-tight">{user?.name}</p>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider mt-0.5">{user?.role}</p>
+                        <p className="text-xs font-extrabold truncate text-white leading-tight">{user?.name}</p>
+                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-wider mt-0.5">{user?.role}</p>
                       </div>
                     </div>
                     <Button 
                       asChild 
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full h-11 text-center font-headline text-xs font-bold uppercase tracking-wider"
+                      className="w-full h-11 text-center font-headline text-xs font-bold uppercase tracking-wider bg-white text-[#0a0f24] hover:bg-slate-100 border-none"
                     >
                       <Link to={user?.role === "admin" ? "/admin" : "/dashboard"}>
                         Go to Dashboard
@@ -347,7 +319,7 @@ export function Header() {
                     <Button 
                       asChild 
                       onClick={() => setMobileMenuOpen(false)}
-                      className="w-full h-11 text-center font-headline text-xs font-bold uppercase tracking-wider"
+                      className="w-full h-11 text-center font-headline text-xs font-bold uppercase tracking-wider bg-brand-red text-white hover:bg-red-600 border-none"
                     >
                       <Link to="/login">Sign in</Link>
                     </Button>
