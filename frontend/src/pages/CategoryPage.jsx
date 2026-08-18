@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { postService } from "../services/postService";
+import { sortByNewest } from "../utils/postUtils";
 import { StoryCard } from "../components/blog/StoryCard";
 import { EmptyState } from "../components/common/EmptyState";
 import { SkeletonStoryCard } from "../components/common/Skeleton";
@@ -8,10 +9,11 @@ import { SEO } from "../components/common/SEO";
 
 export function CategoryPage() {
   const { slug } = useParams();
-  const posts = useQuery({ queryKey: ["category", slug], queryFn: () => postService.list({ q: slug.replaceAll("-", " ") }) });
+  const posts = useQuery({ queryKey: ["category", slug], queryFn: () => postService.list({ category: slug }) });
 
   const isLoading = posts.isLoading;
   const categoryTitle = slug ? slug.replaceAll("-", " ") : "";
+  const sortedPosts = sortByNewest(posts.data?.data || []);
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-12">
@@ -30,11 +32,11 @@ export function CategoryPage() {
       ) : (
         <>
           <div className="mt-10 grid gap-7 md:grid-cols-3">
-            {(posts.data?.data || []).map((post) => (
+            {sortedPosts.map((post) => (
               <StoryCard key={post._id} post={post} />
             ))}
           </div>
-          {!posts.data?.data?.length && <div className="mt-8"><EmptyState /></div>}
+          {!sortedPosts.length && <div className="mt-8"><EmptyState /></div>}
         </>
       )}
     </main>

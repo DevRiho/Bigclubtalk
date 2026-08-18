@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { postService } from "../services/postService";
 import { metaService } from "../services/metaService";
+import { sortByNewest } from "../utils/postUtils";
 import { BreakingTicker } from "../components/home/BreakingTicker";
 import { HeroSection } from "../components/home/HeroSection";
 import { TrendingStories } from "../components/home/TrendingStories";
@@ -29,9 +30,9 @@ export function HomePage() {
     );
   }
 
-  const featuredPosts = featured.data?.data || [];
+  const featuredPosts = sortByNewest(featured.data?.data || []);
   const trendingPosts = trending.data?.data || [];
-  const latestPosts = latest.data?.data || [];
+  const latestPosts = sortByNewest(latest.data?.data || []);
 
   return (
     <main>

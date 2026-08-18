@@ -2,6 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { postService } from "../services/postService";
+import { sortByNewest } from "../utils/postUtils";
 import { StoryCard } from "../components/blog/StoryCard";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
@@ -15,6 +16,7 @@ export function SearchPage() {
   const results = useQuery({ queryKey: ["search", q], queryFn: () => postService.list({ q }), enabled: Boolean(q) });
 
   const isLoading = results.isLoading && results.isFetching;
+  const searchPosts = sortByNewest(results.data?.data || []);
 
   function onSubmit(event) {
     event.preventDefault();
@@ -46,11 +48,11 @@ export function SearchPage() {
       ) : (
         <>
           <div className="mt-10 grid gap-7 md:grid-cols-3">
-            {(results.data?.data || []).map((post) => (
+            {searchPosts.map((post) => (
               <StoryCard key={post._id} post={post} />
             ))}
           </div>
-          {q && !results.isLoading && !results.data?.data?.length && (
+          {q && !results.isLoading && !searchPosts.length && (
             <div className="mt-8"><EmptyState title="No results found" /></div>
           )}
         </>

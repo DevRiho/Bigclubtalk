@@ -63,6 +63,31 @@ export function Header() {
     }
   }, [searchOpen]);
 
+  // Close mobile menu on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setMobileMenuOpen(false);
+      }
+    };
+    if (mobileMenuOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen]);
+
+  // Lock body scroll when mobile menu is active
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -210,11 +235,12 @@ export function Header() {
           {/* MOBILE MENU TOGGLER */}
           <Button
             variant="ghost"
-            onClick={() => setMobileMenuOpen(true)}
-            className="h-10 w-10 px-0 rounded-full lg:hidden"
-            aria-label="Open mobile menu"
+            onClick={() => setMobileMenuOpen(prev => !prev)}
+            className="h-11 w-11 px-0 rounded-full lg:hidden flex items-center justify-center"
+            aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+            aria-expanded={mobileMenuOpen}
           >
-            <Menu size={20} />
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </Button>
         </div>
       </div>
@@ -238,7 +264,7 @@ export function Header() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed bottom-0 right-0 top-0 z-50 flex h-full w-[310px] flex-col border-l border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-[#0c142c] lg:hidden"
+              className="fixed bottom-0 right-0 top-0 z-50 flex h-full w-[310px] max-w-[calc(100vw-2.5rem)] flex-col border-l border-slate-200 bg-white p-6 shadow-2xl overflow-y-auto dark:border-slate-800 dark:bg-[#0c142c] lg:hidden"
             >
               {/* BRAND HEADER */}
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 pb-4">

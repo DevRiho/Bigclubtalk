@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import slugify from "slugify";
 import { Post } from "../models/Post.js";
 import { Category } from "../models/Category.js";
@@ -21,7 +22,18 @@ export async function listPosts(query) {
   } else {
     filter.status = POST_STATUS.PUBLISHED;
   }
-  if (query.category) filter.category = query.category;
+  if (query.category) {
+    if (mongoose.Types.ObjectId.isValid(query.category)) {
+      filter.category = query.category;
+    } else {
+      const cat = await Category.findOne({ slug: query.category });
+      if (cat) {
+        filter.category = cat._id;
+      } else {
+        filter.category = new mongoose.Types.ObjectId();
+      }
+    }
+  }
   if (query.author) filter.author = query.author;
   if (query.tag) filter.tags = String(query.tag).toLowerCase();
   if (query.featured) filter.featured = query.featured === "true";

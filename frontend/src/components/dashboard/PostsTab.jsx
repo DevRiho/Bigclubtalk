@@ -1,4 +1,5 @@
 import { Plus, Edit2, Trash2 } from "lucide-react";
+import { sortByNewest } from "../../utils/postUtils";
 
 export function PostsTab({ 
   adminPosts, 
@@ -11,10 +12,11 @@ export function PostsTab({
   postSearch, 
   setPostSearch 
 }) {
-  const filteredPosts = adminPosts?.filter(p => 
+  const sortedAdminPosts = sortByNewest(adminPosts || []);
+  const filteredPosts = sortedAdminPosts.filter(p => 
     p.title?.toLowerCase().includes(postSearch.toLowerCase()) ||
     p.slug?.toLowerCase().includes(postSearch.toLowerCase())
-  ) || [];
+  );
 
   return (
     <div className="space-y-6">

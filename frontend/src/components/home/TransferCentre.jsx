@@ -9,7 +9,7 @@ export function TransferCentre({ posts = [] }) {
     .slice(0, 5);
 
   return (
-    <section className="bg-slate-50 dark:bg-slate-900/30 py-16 transition-colors duration-200">
+    <section className="bg-slate-50 dark:bg-slate-900/30 pt-10 pb-12 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4">
         <SectionHeader eyebrow="Market watch" title="Transfer Centre" />
         
