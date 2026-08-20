@@ -34,10 +34,12 @@ async function seed() {
 
     // 2. Seed Default Categories
     const defaultCategories = [
-      { name: "Tactics", slug: "tactics", color: "#E10600" },
+      { name: "Football News", slug: "football-news", color: "#E10600" },
       { name: "Transfers", slug: "transfers", color: "#FFB000" },
-      { name: "Analysis", slug: "analysis", color: "#0057FF" },
-      { name: "News", slug: "news", color: "#101820" }
+      { name: "Match Analysis", slug: "match-analysis", color: "#0057FF" },
+      { name: "Club News", slug: "club-news", color: "#101820" },
+      { name: "Fan Opinions", slug: "fan-opinions", color: "#00875A" },
+      { name: "Tactics", slug: "tactics", color: "#9333EA" }
     ];
 
     for (const cat of defaultCategories) {

@@ -26,7 +26,35 @@ export async function listPosts(query) {
     if (mongoose.Types.ObjectId.isValid(query.category)) {
       filter.category = query.category;
     } else {
-      const cat = await Category.findOne({ slug: query.category });
+      const categoryParam = String(query.category).trim();
+      let cat = await Category.findOne({ slug: categoryParam });
+      
+      if (!cat) {
+        const aliasMap = {
+          "football-news": "news",
+          "news": "football-news",
+          "match-analysis": "analysis",
+          "analysis": "match-analysis",
+          "club-news": "news"
+        };
+        const altSlug = aliasMap[categoryParam];
+        if (altSlug) {
+          cat = await Category.findOne({ slug: altSlug });
+        }
+      }
+
+      if (!cat) {
+        const cleanPattern = categoryParam.replace(/-/g, ".*");
+        const cleanNamePattern = categoryParam.replace(/-/g, " ");
+        cat = await Category.findOne({
+          $or: [
+            { slug: new RegExp(`^${cleanPattern}$`, "i") },
+            { name: new RegExp(`^${cleanNamePattern}$`, "i") },
+            { name: new RegExp(cleanNamePattern, "i") }
+          ]
+        });
+      }
+
       if (cat) {
         filter.category = cat._id;
       } else {

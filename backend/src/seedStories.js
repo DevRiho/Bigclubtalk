@@ -36,7 +36,7 @@ const stories = [
   {
     title: "Why Midfield Structural Balance is the Key to Unlocking Bukayo Saka",
     excerpt: "Analyzing how Arsenal's midfield structure—specifically Declan Rice's defensive coverage—allows Bukayo Saka to play with maximum attacking freedom.",
-    categoryName: "Analysis",
+    categoryName: "Match Analysis",
     tags: ["analysis", "arsenal", "saka", "tactics"],
     featured: false,
     coverUrl: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80",
@@ -49,7 +49,7 @@ const stories = [
   {
     title: "The Multi-Club Ownership Dilemma: What It Means for Mid-Tier European Clubs",
     excerpt: "As holding companies acquire multiple football clubs across different countries, we examine the sporting integrity risks and potential benefits for smaller teams.",
-    categoryName: "News",
+    categoryName: "Football News",
     tags: ["news", "ownership", "uefa", "governance"],
     featured: false,
     coverUrl: "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=800&q=80",
@@ -87,7 +87,7 @@ const stories = [
   {
     title: "Super Falcons: The Glory of Having 10 Stars on Their Jersey",
     excerpt: "With a record 10 WAFCON titles, the Nigeria Women's National Football Team stands as the ultimate powerhouse of African football, proudly wearing 10 stars.",
-    categoryName: "News",
+    categoryName: "Football News",
     tags: ["super falcons", "nigeria", "wafcon", "womens football", "africa"],
     featured: true,
     coverUrl: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=800&q=80",
@@ -95,6 +95,18 @@ const stories = [
       <p>The Nigeria Women's National Football Team, popularly known as the Super Falcons, has achieved an unprecedented milestone in continental football. With their latest historic triumph, they have secured their tenth Women's Africa Cup of Nations (WAFCON) title, paving the way for 10 glorious stars to be embroidered on their official jersey.</p>
       <p>This achievement cements the Super Falcons' status as the most successful national team in African history. Since the inception of the tournament, Nigeria has dominated the women's game, showcasing elite talent, physical dominance, and tactical superiority across generations of players like Perpetua Nkwocha, Asisat Oshoala, and Rasheedat Ajibade.</p>
       <p>Wearing 10 stars on their jersey is not just a badge of honor; it is a statement of absolute dominance and a symbol of pride for millions of Nigerian football fans. As the team looks to conquer the global stage, these 10 stars serve as a reminder of their legendary status as the undisputed queens of African football.</p>
+    `
+  },
+  {
+    title: "Inside the Dressing Room: Big European Clubs Rebuilding Their Squad Depth",
+    excerpt: "Detailed updates on squad restructuring, manager press conferences, and key internal team news ahead of the weekend fixtures.",
+    categoryName: "Club News",
+    tags: ["club news", "squad depth", "premier league", "champions league"],
+    featured: false,
+    coverUrl: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80",
+    content: `
+      <p>Behind closed doors, top clubs are working relentlessly to balance heavy fixture congestion with squad rotation. With modern seasons extending into over 60 competitive matches, managers must manage player workload while keeping morale high.</p>
+      <p>Key internal reports highlight how youth academies are being integrated into first-team training sessions to provide sustainable backup options during injury crises.</p>
     `
   }
 ];
@@ -124,15 +136,17 @@ async function seedStories() {
       if (!category) {
         // Create matching colors
         let color = "#101820";
-        if (name === "Tactics") color = "#E10600";
+        if (name === "Football News") color = "#E10600";
+        if (name === "Tactics") color = "#9333EA";
         if (name === "Transfers") color = "#FFB000";
-        if (name === "Analysis") color = "#0057FF";
+        if (name === "Match Analysis" || name === "Analysis") color = "#0057FF";
         if (name === "Fan Opinions") color = "#00875A";
+        if (name === "Club News") color = "#101820";
 
         category = await Category.create({ name, slug, color });
-        console.log(`Created Category: ${name}`);
+        console.log(`Created Category: ${name} (${slug})`);
       } else {
-        console.log(`Found existing Category: ${name}`);
+        console.log(`Found existing Category: ${name} (${slug})`);
       }
       categoriesMap[name] = category._id;
     }
