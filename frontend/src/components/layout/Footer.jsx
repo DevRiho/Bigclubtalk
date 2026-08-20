@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Twitter, Instagram, Youtube, ArrowUp } from "lucide-react";
-import { NAV_ITEMS } from "../../constants/brand";
+import { NAV_ITEMS, SOCIAL_LINKS } from "../../constants/brand";
 import logo from "../../assets/WhatsApp Image 2026-06-20 at 9.53.17 PM.jpeg";
 
 export function Footer() {
@@ -29,16 +29,16 @@ export function Footer() {
             </p>
             <div className="flex gap-4">
               <a 
-                href="https://twitter.com" 
+                href={SOCIAL_LINKS.twitter} 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="rounded-full bg-white dark:bg-slate-900 p-2.5 text-slate-600 dark:text-slate-400 shadow-sm border border-slate-100 dark:border-slate-800 transition hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white" 
-                aria-label="Twitter"
+                aria-label="Twitter / X"
               >
                 <Twitter size={16} />
               </a>
               <a 
-                href="https://instagram.com" 
+                href={SOCIAL_LINKS.instagram} 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="rounded-full bg-white dark:bg-slate-900 p-2.5 text-slate-600 dark:text-slate-400 shadow-sm border border-slate-100 dark:border-slate-800 transition hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white" 
@@ -47,7 +47,7 @@ export function Footer() {
                 <Instagram size={16} />
               </a>
               <a 
-                href="https://youtube.com" 
+                href={SOCIAL_LINKS.youtube} 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="rounded-full bg-white dark:bg-slate-900 p-2.5 text-slate-600 dark:text-slate-400 shadow-sm border border-slate-100 dark:border-slate-800 transition hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white" 

@@ -151,36 +151,36 @@ async function seedStories() {
       categoriesMap[name] = category._id;
     }
 
-    // 3. Clear existing posts to prevent duplicate slugs
-    const deleteResult = await Post.deleteMany({});
-    console.log(`Cleared ${deleteResult.deletedCount} existing posts.`);
-
-    // 4. Create new posts
+    // 3. Upsert default stories (preserves user posts)
     for (const story of stories) {
       const slug = slugify(story.title, { lower: true, strict: true });
-      
       const words = story.content.trim().split(/\s+/).length;
       const readingTime = Math.max(Math.ceil(words / 220), 1);
 
-      await Post.create({
-        title: story.title,
-        slug,
-        content: story.content,
-        excerpt: story.excerpt,
-        coverImage: {
-          url: story.coverUrl,
-          alt: story.title
-        },
-        category: categoriesMap[story.categoryName],
-        tags: story.tags,
-        readingTime,
-        author: author._id,
-        status: "published",
-        featured: story.featured,
-        views: Math.floor(Math.random() * 500) + 50,
-        publishedAt: new Date()
-      });
-      console.log(`Seeded post: ${story.title}`);
+      const existingPost = await Post.findOne({ slug });
+      if (!existingPost) {
+        await Post.create({
+          title: story.title,
+          slug,
+          content: story.content,
+          excerpt: story.excerpt,
+          coverImage: {
+            url: story.coverUrl,
+            alt: story.title
+          },
+          category: categoriesMap[story.categoryName],
+          tags: story.tags,
+          readingTime,
+          author: author._id,
+          status: "published",
+          featured: story.featured,
+          views: Math.floor(Math.random() * 500) + 50,
+          publishedAt: new Date()
+        });
+        console.log(`Seeded post: ${story.title}`);
+      } else {
+        console.log(`Preserved existing post: ${story.title}`);
+      }
     }
 
     console.log("Database seeded with football stories successfully!");

@@ -15,6 +15,12 @@ export const NAV_ITEMS = [
   { label: "Fan Opinions", href: "/category/fan-opinions" }
 ];
 
+export const SOCIAL_LINKS = {
+  twitter: "https://x.com/bigclubtalks?s=11",
+  youtube: "https://consent.youtube.com/m",
+  instagram: "https://instagram.com"
+};
+
 export const FEATURED_CLUBS = ["Manchester United", "Arsenal", "Chelsea", "Liverpool", "Manchester City", "Barcelona", "Real Madrid", "Bayern Munich"];
 
 export const FALLBACK_SPORTS_IMAGE =
