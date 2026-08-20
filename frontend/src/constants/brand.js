@@ -17,8 +17,8 @@ export const NAV_ITEMS = [
 
 export const SOCIAL_LINKS = {
   twitter: "https://x.com/bigclubtalks?s=11",
-  youtube: "https://consent.youtube.com/m",
-  instagram: "https://instagram.com"
+  youtube: "https://www.youtube.com/@BigClubTalks",
+  instagram: "https://www.instagram.com/bigclubtalks?igsh=MWtwbzYzbnRoNzcxYQ%3D%3D&utm_source=qr"
 };
 
 export const FEATURED_CLUBS = ["Manchester United", "Arsenal", "Chelsea", "Liverpool", "Manchester City", "Barcelona", "Real Madrid", "Bayern Munich"];
