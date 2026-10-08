@@ -36,7 +36,7 @@ export function ClubRail() {
             <img 
               src={CLUB_LOGOS[club]} 
               alt={`${club} logo`} 
-              className="h-full w-full object-contain opacity-50 grayscale filter transition-all duration-500 ease-out group-hover:scale-110 group-hover:opacity-70 dark:opacity-60 dark:invert dark:group-hover:opacity-80"
+              className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-110"
             />
           </Link>
         ))}
